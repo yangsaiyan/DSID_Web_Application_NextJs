@@ -1,0 +1,19 @@
+{
+  "name": "dsid",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mui/material": "^6.4.1",
+    "@mui/styled-engine-sc": "^6.4.0",
+    "next": "15.1.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "styled-components": "^6.1.14"
+  }
+}
