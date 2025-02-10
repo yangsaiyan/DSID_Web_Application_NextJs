@@ -20,7 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body style={{ backgroundImage: "linear-gradient(to right bottom, #37393d, #303134, #29292b, #222223, #1b1b1b)", backgroundRepeat: "no-repeat", backgroundAttachment: "fixed", backgroundSize: "cover", backgroundPosition: "center" }}>
         <Navbar />
         {children}
       </body>

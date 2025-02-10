@@ -1,7 +1,14 @@
+"use client";
+import { Grid2, Typography } from "@mui/material";
+import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
+import { StyledLottie } from "./styles";
+
 export default function page() {
+
     return (
-      <div>
-        welcome to DSID
-      </div>
+      <Grid2 style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+        <StyledLottie animationData={animationData} />
+        <Typography variant="h4" sx={{ fontFamily: "cursive", textAlign: "center" }}>Secure, Smart, and Decentralized – Your Student ID, Reimagined.</Typography>
+      </Grid2>
     );
   }

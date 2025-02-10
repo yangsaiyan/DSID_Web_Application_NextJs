@@ -1,25 +1,45 @@
 "use client";
-import {NavbarContainer, StyledText, TextContainer} from "./styles";
+import { Grid2 } from "@mui/material";
+import {
+  ConnectWalletButton,
+  NavbarContainer,
+  NavbarContent,
+  NavbarContentContainer,
+  StyledBox,
+  StyledText,
+  TextContainer,
+} from "./styles";
 
 export default function Navbar() {
+  const isConnected = false;
 
-    return (
-        <NavbarContainer>
+  return (
+    <Grid2 sx={{ padding: "0 5% 0 5%" }}>
+      <NavbarContainer>
+        <NavbarContentContainer>
+          <StyledBox />
+          <NavbarContent>
             <TextContainer href={"/home"}>
-                <StyledText>
-                    Home
-                </StyledText>
+              <StyledText>Home</StyledText>
             </TextContainer>
             <TextContainer href={"/search"}>
-                <StyledText>
-                    Search
-                </StyledText>
+              <StyledText>Search</StyledText>
             </TextContainer>
             <TextContainer href={"/register"}>
-                <StyledText>
-                    Register
-                </StyledText>
+              <StyledText>Register</StyledText>
             </TextContainer>
-        </NavbarContainer>
-    )
+          </NavbarContent>
+        </NavbarContentContainer>
+        {isConnected ? (
+          <>
+            0x123...456
+          </>
+        ) : (
+          <>
+            <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+          </>
+        )}
+      </NavbarContainer>
+    </Grid2>
+  );
 }
