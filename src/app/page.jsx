@@ -1,7 +1,11 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+
+const Lottie = dynamic(() => import('lottie-react'), { 
+  ssr: false 
+});
 
 export default function page() {
   return (
