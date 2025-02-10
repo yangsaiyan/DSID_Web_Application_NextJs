@@ -3,8 +3,8 @@ import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
 import dynamic from "next/dynamic";
 
-const Lottie = dynamic(() => import('lottie-react'), { 
-  ssr: false 
+const Lottie = dynamic(() => import("lottie-react"), {
+  ssr: false,
 });
 
 export default function page() {
