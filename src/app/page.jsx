@@ -1,7 +1,7 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
-import StyledLottie from "../app/components/LottiePlayer/Lottie";
 import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
+import Lottie from "lottie-react";
 
 export default function page() {
   return (
@@ -13,7 +13,15 @@ export default function page() {
         alignItems: "center",
       }}
     >
-      <StyledLottie animationData={animationData} />
+      <Lottie
+        animationData={animationData}
+        style={{
+          width: "100%",
+          height: "100%",
+          maxWidth: "30%",
+          maxHeight: "30%",
+        }}
+      />
       <Typography
         variant="h4"
         sx={{ fontFamily: "cursive", textAlign: "center" }}
