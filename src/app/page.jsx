@@ -1,6 +1,6 @@
+import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
 "use client";
 import { Grid2, Typography } from "@mui/material";
-import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
 import { StyledLottie } from "./styles";
 
 export default function page() {
