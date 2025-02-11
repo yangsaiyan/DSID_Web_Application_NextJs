@@ -17,7 +17,16 @@ export default function Navbar() {
     <Grid2 sx={{ padding: "0 5% 0 5%" }}>
       <NavbarContainer>
         <NavbarContentContainer>
-          <StyledBox />
+          <Grid2
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"center"}
+            backgroundColor={"#d9d9d9"}
+            borderRadius={"20% 0 0 20%"}
+            zIndex={1000}
+          >
+            <StyledBox />
+          </Grid2>
           <NavbarContent>
             <TextContainer href={"/home"}>
               <StyledText>Home</StyledText>
@@ -31,9 +40,7 @@ export default function Navbar() {
           </NavbarContent>
         </NavbarContentContainer>
         {isConnected ? (
-          <>
-            0x123...456
-          </>
+          <>0x123...456</>
         ) : (
           <>
             <ConnectWalletButton>Connect Wallet</ConnectWalletButton>

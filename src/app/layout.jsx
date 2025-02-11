@@ -9,7 +9,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ backgroundImage: "linear-gradient(to right bottom, #37393d, #303134, #29292b, #222223, #1b1b1b)", backgroundRepeat: "no-repeat", backgroundAttachment: "fixed", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <body
+        style={{
+          backgroundImage: `linear-gradient(145deg, rgba(73,73,73,0.6) 0%, rgba(0,0,0,1) 100%), 
+          url("/assets/images/indexBackground.jpg")`,
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <Navbar />
         {children}
       </body>

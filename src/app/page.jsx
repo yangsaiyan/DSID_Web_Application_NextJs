@@ -1,6 +1,6 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
-import animationData from "../../public/assets/lotties/StudentIdAnimation.json";
+import animationData from "../../public/assets/lotties/blockchain.json";
 import dynamic from "next/dynamic";
 
 const Lottie = dynamic(() => import("lottie-react"), {
@@ -26,10 +26,7 @@ export default function page() {
           maxHeight: "30%",
         }}
       />
-      <Typography
-        variant="h4"
-        sx={{ fontFamily: "cursive", textAlign: "center" }}
-      >
+      <Typography sx={{ fontFamily: "cursive", textAlign: "center" }}>
         Secure, Smart, and Decentralized – Your Student ID, Reimagined.
       </Typography>
     </Grid2>

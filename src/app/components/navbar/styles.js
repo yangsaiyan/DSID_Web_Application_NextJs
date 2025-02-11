@@ -6,10 +6,9 @@ export const NavbarContainer = styled(Grid2)({
 
     display: "flex",
     minWidth: "100%",
-    minHeight: "102px",
-    // margin: "5px",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: "2.5%",
 })
 
 export const StyledBox = styled(Box)({
@@ -21,6 +20,7 @@ export const StyledBox = styled(Box)({
     backgroundImage: "url('/assets/images/logo.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
+    boxShadow: "0px 0px 10px 1px rgb(0, 0, 0)",
 })
 
 export const NavbarContentContainer = styled(Grid2)({
@@ -35,11 +35,11 @@ export const NavbarContent = styled(Grid2)({
 
     display: "flex",
     alignItems: "center",
-    minHeight: "56px",
+    height: "82px",
     padding: "5px",
-    borderRadius: "0 16px 16px 0",
-    background: "rgba(217, 217, 217, 0.04)",
-    boxShadow: "0px 0px 3px 4px rgba(130,130,130,0.38) inset",
+    borderRadius: "0 48px 48px 0",
+    boxShadow: "0px 0px 10px 5px rgb(0, 0, 0)",
+    background: "#d9d9d9",
     paddingLeft: "24px",
     paddingRight: "24px",
     gap: "36px",
@@ -47,13 +47,30 @@ export const NavbarContent = styled(Grid2)({
 
 export const TextContainer = styled(Link)({
 
+    position: "relative",
     display: "flex",
-    background: "transparent",
+    transition: "color 0.3s ease",
+  
+    "&:after": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      width: "0%",
+      height: "2px",
+      backgroundColor: "black",
+      transition: "width 0.3s ease, left 0.3s ease",
+    },
+  
+    "&:hover:after": {
+      width: "100%",
+    },
 })
 
 export const StyledText = styled(Typography)({
 
-
+    color: "black",
+    fontSize: "20px",
+    fontWeight: "700",
 })
 
 export const ConnectWalletButton = styled(Box)({
