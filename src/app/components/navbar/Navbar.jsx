@@ -28,7 +28,7 @@ export default function Navbar() {
             <StyledBox />
           </Grid2>
           <NavbarContent>
-            <TextContainer href={"/home"}>
+            <TextContainer href={"/"}>
               <StyledText>Home</StyledText>
             </TextContainer>
             <TextContainer href={"/search"}>

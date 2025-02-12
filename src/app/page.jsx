@@ -15,6 +15,7 @@ export default function page() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        height: "100%",
       }}
     >
       <Lottie
