@@ -76,6 +76,7 @@ export const StyledText = styled(Typography)({
 export const ConnectWalletButton = styled(Box)({
 
     display: "flex",
+    gap: "8px",
     alignItems: "center",
     justifyContent: "center",
     width: "fit-content",

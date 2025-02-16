@@ -9,9 +9,21 @@ import {
   StyledText,
   TextContainer,
 } from "./styles";
+import { useAccount, useDisconnect } from "wagmi";
+import { Account } from "./Account/account";
+import { WalletButton } from "./WalletButton/WalletButton";
 
 export default function Navbar() {
-  const isConnected = false;
+  // const { address } = useAccount()
+  // const { disconnect } = useDisconnect()
+
+  function ConnectWallet() {
+    const { isConnected } = useAccount();
+    if (isConnected) return <Account />;
+    return (
+    <WalletButton />
+  );
+  }
 
   return (
     <Grid2 sx={{ padding: "0 5% 0 5%" }}>
@@ -39,13 +51,7 @@ export default function Navbar() {
             </TextContainer>
           </NavbarContent>
         </NavbarContentContainer>
-        {isConnected ? (
-          <>0x123...456</>
-        ) : (
-          <>
-            <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
-          </>
-        )}
+        <ConnectWallet></ConnectWallet>
       </NavbarContainer>
     </Grid2>
   );
