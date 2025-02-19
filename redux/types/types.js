@@ -1,0 +1,1 @@
+export const TYPE_GET_USER = "TYPE_GET_USER";

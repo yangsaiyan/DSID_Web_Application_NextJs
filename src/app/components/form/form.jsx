@@ -8,15 +8,24 @@ import {
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
-import { useState } from "react";
+import { use, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../../../../redux/actions/user_action";
 
 export default function form() {
+
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
+
   const [formData, setFormData] = useState({
     name: "",
     studentId: "",
     walletAddress: "",
     token: "",
   });
+
+  console.log(user);
 
   return (
     <StyledBox>
@@ -36,7 +45,7 @@ export default function form() {
       </TextFieldContainer>
       <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"}>Submit</CTAButton>
+        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser())}}>Submit</CTAButton>
       </CTAButtonContainer>
     </StyledBox>
   );
