@@ -45,7 +45,7 @@ export default function form() {
       </TextFieldContainer>
       <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser())}}>Submit</CTAButton>
+        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser({userName: "LLLL", userAge: "123"}))}}>Submit</CTAButton>
       </CTAButtonContainer>
     </StyledBox>
   );

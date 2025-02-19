@@ -10,7 +10,13 @@ const userInitialState = {
 const userReducer = (state = userInitialState, action) => {
   switch (action.type) {
     case TYPE_GET_USER:
-      return { ...state, userName: "John", userAge: 25};
+      return {
+        ...state,
+        userName: action.payload.userName || state.userName,
+        userAge: action.payload.userAge || state.userAge,
+        userGender: action.payload.userGender || state.userGender,
+        userID: action.payload.userID || state.userID,
+      };
     default:
       return state;
   }
