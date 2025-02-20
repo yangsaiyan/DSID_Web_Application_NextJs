@@ -8,12 +8,11 @@ import {
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
-import { use, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { getUser } from "../../../../redux/actions/user_action";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
-import { Router } from "next/router";
 import Loading from "../loading/loading";
 
 export default function form() {

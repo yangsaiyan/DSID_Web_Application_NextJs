@@ -1,6 +1,6 @@
 "use client";
 import { Grid2 } from "@mui/material";
-// import FormComponent from "../../app/components/form/form";
+import FormComponent from "../../app/components/form/form";
 import Navbar from "../components/navbar/Navbar";
 
 export default function page() {
@@ -17,7 +17,7 @@ export default function page() {
           alignItems: "center",
         }}
       >
-        {/* <FormComponent /> */}
+        <FormComponent />
       </Grid2>
     </>
   );
