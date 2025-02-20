@@ -82,7 +82,7 @@ export default function form() {
         </Grid2> */}
       {/* <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser({userName: "LLLL", userAge: "123"}))}}>Submit</CTAButton>
+        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser({userName: "LLLL", userAge: "123"}))}}>Submit</CTAButton> 
       </CTAButtonContainer> */}
     </StyledBox>
   );
