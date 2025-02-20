@@ -40,7 +40,7 @@ export default function form() {
     } else if (pathname?.includes("pushEmail")) {
       setFormDisplay(formPath?.pushEmail);
     }
-  }, [Router.isReady]);
+  }, [pathname]);
 
   useEffect(() => {
     filterFormInput(formDisplay);
