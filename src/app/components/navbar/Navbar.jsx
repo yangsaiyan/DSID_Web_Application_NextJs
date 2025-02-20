@@ -13,7 +13,8 @@ import { useAccount, useDisconnect } from "wagmi";
 import { Account } from "./Account/account";
 import { WalletButton } from "./WalletButton/WalletButton";
 
-export default function Navbar() {
+export default function Navbar(props) {
+  const {ref} = props;
   // const { address } = useAccount()
   // const { disconnect } = useDisconnect()
 
@@ -26,7 +27,7 @@ export default function Navbar() {
   }
 
   return (
-    <Grid2 sx={{ padding: "0 5% 0 5%" }}>
+    <Grid2 ref={ref} sx={{ padding: "2.5% 5% 0 5%" }}>
       <NavbarContainer>
         <NavbarContentContainer>
           <Grid2

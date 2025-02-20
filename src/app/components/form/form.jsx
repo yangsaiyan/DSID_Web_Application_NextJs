@@ -14,12 +14,11 @@ import { getUser } from "../../../../redux/actions/user_action";
 import { usePathname, useRouter } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import { Router } from "next/router";
+import Loading from "../loading/loading";
 
 export default function form() {
   const dispatch = useDispatch();
   const pathname = usePathname();
-
-  const user = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,6 +32,7 @@ export default function form() {
   });
   const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
   const [formInput, setFormInput] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (pathname?.includes("register")) {
@@ -44,6 +44,7 @@ export default function form() {
 
   useEffect(() => {
     filterFormInput(formDisplay);
+    setLoading(false);
   }, [formDisplay]);
 
   const filterFormInput = (formDisplay) => {
@@ -59,31 +60,47 @@ export default function form() {
     }
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <StyledBox>
-      {Object?.entries(formInput)?.map(([key, value]) => {
-        return (
-          <TextFieldContainer>
-            <StyledTextField label={userData[key]} />
-          </TextFieldContainer>
-        );
-      })}
-      <StyledTextField label="Student ID" />
-      {/* <Grid2
-          display={"flex"}
-          flexDirection={"column"}
-          justifyContent={"center"}
-          alignItems={"center"}
-          gap={"5px"}
-          width={"100%"}
-        >
-          <StyledTextField label="Wallet Address" />
-          <ConnectWalletButton>xxxxxxxxxxxxxxxxxxxx</ConnectWalletButton>
-        </Grid2> */}
-      {/* <CTAButtonContainer>
+      <TextFieldContainer
+        sx={{ paddingTop: pathname?.includes("register") && "96px" }}
+      >
+        {Object?.entries(formInput)?.map(([key, value]) => {
+          return (
+            <>
+              {key !== "walletAddress" && key !== "token" && (
+                <StyledTextField label={userData[key]} />
+              )}
+              {key === "walletAddress" && (
+                <Grid2
+                  display={"flex"}
+                  flexDirection={"column"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  gap={"5px"}
+                  width={"100%"}
+                >
+                  <StyledTextField label={userData[key]} />
+                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+                </Grid2>
+              )}
+            </>
+          );
+        })}
+      </TextFieldContainer>
+      <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"} onClick={()=>{dispatch(getUser({userName: "LLLL", userAge: "123"}))}}>Submit</CTAButton> 
-      </CTAButtonContainer> */}
+        <CTAButton
+          type={"submit"}
+          onClick={() => {
+            dispatch(getUser({ userName: "LLLL", userAge: "123" }));
+          }}
+        >
+          Submit
+        </CTAButton>
+      </CTAButtonContainer>
     </StyledBox>
   );
 }

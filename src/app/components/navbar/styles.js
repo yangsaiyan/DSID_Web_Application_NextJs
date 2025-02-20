@@ -8,7 +8,6 @@ export const NavbarContainer = styled(Grid2)({
     minWidth: "100%",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: "2.5%",
 })
 
 export const StyledBox = styled(Box)({
