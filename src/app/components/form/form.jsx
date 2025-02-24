@@ -4,7 +4,6 @@ import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
-  StyledBox as ServerStyledBox,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -15,7 +14,9 @@ import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import Loading from "../loading/loading";
 
-export const StyledBox = ServerStyledBox;
+const StyledBox = dynamic(() => import('./styles').then(mod => mod.StyledBox), {
+  ssr: false
+});
 
 export default function form() {
   const dispatch = useDispatch();
