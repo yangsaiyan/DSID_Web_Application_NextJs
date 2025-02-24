@@ -17,18 +17,21 @@ export const StyledBox = styled(Box)({
   overflowY: "scroll",
   boxShadow:
     "rgba(50, 50, 93, 0.65) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.39) 0px 18px 36px -18px inset",
-  "&::-webkit-scrollbar": {
-    width: "6px",
-  },
-  "&::-webkit-scrollbar-track": {
-    WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-    marginTop: "12px",
-    marginBottom: "12px",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    backgroundColor: "rgba(115, 114, 114, 0.77)",
-    borderRadius: "50px",
-  },
+
+  ...(typeof document !== "undefined" && {
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+      marginTop: "12px",
+      marginBottom: "12px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(115, 114, 114, 0.77)",
+      borderRadius: "50px",
+    },
+  }),
 });
 
 export const TextFieldContainer = styled(Grid2)({

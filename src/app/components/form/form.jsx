@@ -15,6 +15,11 @@ import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import Loading from "../loading/loading";
 
+const ConnectWalletButton = dynamic(
+  () => import('./styles').then(mod => mod.ConnectWalletButton),
+  { ssr: false }
+);
+
 export default function form() {
   const dispatch = useDispatch();
   const pathname = usePathname();
