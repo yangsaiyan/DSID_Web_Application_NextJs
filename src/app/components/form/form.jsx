@@ -66,32 +66,11 @@ export default function form() {
   return loading ? (
     <Loading />
   ) : (
-    <Grid2>
+    <StyledBox>
       <TextFieldContainer
         sx={{ paddingTop: pathname?.includes("register") && "96px" }}
       >
-        {Object?.entries(formInput)?.map(([key, value]) => {
-          return (
-            <Grid2 width={"100%"} key={key}>
-              {key !== "walletAddress" && key !== "token" && (
-                <StyledTextField label={userData[key]} />
-              )}
-              {key === "walletAddress" && (
-                <Grid2
-                  display={"flex"}
-                  flexDirection={"column"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  gap={"5px"}
-                  width={"100%"}
-                >
-                  <StyledTextField label={userData[key]} />
-                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
-                </Grid2>
-              )}
-            </Grid2>
-          );
-        })}
+
       </TextFieldContainer>
       <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
@@ -104,6 +83,6 @@ export default function form() {
           Submit
         </CTAButton>
       </CTAButtonContainer>
-    </Grid2>
+    </StyledBox>
   );
 }
