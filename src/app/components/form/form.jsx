@@ -4,6 +4,7 @@ import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
+  StyledBox,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -13,11 +14,6 @@ import { getUser } from "../../../../redux/actions/user_action";
 import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import Loading from "../loading/loading";
-import dynamic from "next/dynamic";
-
-const StyledBox = dynamic(() => import('./styles').then(mod => mod.StyledBox), {
-  ssr: false
-});
 
 export default function form() {
   const dispatch = useDispatch();
@@ -70,7 +66,28 @@ export default function form() {
       <TextFieldContainer
         sx={{ paddingTop: pathname?.includes("register") && "96px" }}
       >
-
+        {Object?.entries(formInput)?.map(([key, value]) => {
+          return (
+            <>
+              {key !== "walletAddress" && key !== "token" && (
+                <StyledTextField label={userData[key]} />
+              )}
+              {key === "walletAddress" && (
+                <Grid2
+                  display={"flex"}
+                  flexDirection={"column"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  gap={"5px"}
+                  width={"100%"}
+                >
+                  <StyledTextField label={userData[key]} />
+                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
+                </Grid2>
+              )}
+            </>
+          );
+        })}
       </TextFieldContainer>
       <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
