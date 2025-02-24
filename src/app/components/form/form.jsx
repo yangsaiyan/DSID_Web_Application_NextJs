@@ -66,7 +66,7 @@ export default function form() {
   return loading ? (
     <Loading />
   ) : (
-    <StyledBox>
+    <Grid2>
       <TextFieldContainer
         sx={{ paddingTop: pathname?.includes("register") && "96px" }}
       >
@@ -104,6 +104,6 @@ export default function form() {
           Submit
         </CTAButton>
       </CTAButtonContainer>
-    </StyledBox>
+    </Grid2>
   );
 }
