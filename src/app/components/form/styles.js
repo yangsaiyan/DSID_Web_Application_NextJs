@@ -1,6 +1,8 @@
 import { Box, Button, Grid2, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
+const isBrowser = () => typeof window !== 'undefined';
+
 export const StyledBox = styled(Box)({
   position: "relative",
   display: "flex",
@@ -18,7 +20,7 @@ export const StyledBox = styled(Box)({
   boxShadow:
     "rgba(50, 50, 93, 0.65) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.39) 0px 18px 36px -18px inset",
 
-  ...(typeof document !== "undefined" && {
+  ...(isBrowser && {
     "&::-webkit-scrollbar": {
       width: "6px",
     },
