@@ -4,7 +4,7 @@ import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
-  StyledBox,
+  StyledBox as ServerStyledBox,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -14,6 +14,8 @@ import { getUser } from "../../../../redux/actions/user_action";
 import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import Loading from "../loading/loading";
+
+export const StyledBox = ServerStyledBox;
 
 export default function form() {
   const dispatch = useDispatch();
@@ -68,7 +70,7 @@ export default function form() {
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
-            <>
+            <Grid2 width={"100%"} key={key}>
               {key !== "walletAddress" && key !== "token" && (
                 <StyledTextField label={userData[key]} />
               )}
@@ -85,7 +87,7 @@ export default function form() {
                   <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                 </Grid2>
               )}
-            </>
+            </Grid2>
           );
         })}
       </TextFieldContainer>
