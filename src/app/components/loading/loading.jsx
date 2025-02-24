@@ -15,7 +15,13 @@ export default function Loading() {
         top={0}
         left={0}
       >
-
+        <Lottie
+          animationData={animationData}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        />
       </Grid2>
     )
 }
