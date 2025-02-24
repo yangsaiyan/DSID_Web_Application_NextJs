@@ -13,6 +13,7 @@ import { getUser } from "../../../../redux/actions/user_action";
 import { usePathname } from "next/navigation";
 import { formPath, userData } from "../../../../constants";
 import Loading from "../loading/loading";
+import dynamic from "next/dynamic";
 
 const StyledBox = dynamic(() => import('./styles').then(mod => mod.StyledBox), {
   ssr: false
