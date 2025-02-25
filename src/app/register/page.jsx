@@ -1,14 +1,16 @@
 "use client";
 import { Grid2 } from "@mui/material";
-import Navbar from "../components/navbar/Navbar";
 import dynamic from "next/dynamic";
 
-const FormComponent = dynamic(() => import("../../app/components/form/form"), {
+const Navbar = dynamic(() => import("../../components/navbar/Navbar"), {
+  ssr: false,
+});
+
+const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
 });
 
 export default function page() {
-
   return (
     <>
       <Navbar />

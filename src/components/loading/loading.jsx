@@ -1,5 +1,5 @@
 import { Grid2 } from "@mui/material";
-import animationData from "../../../../public/assets/lotties/loading.json";
+import animationData from "../../../public/assets/lotties/loading.json";
 import Lottie from "lottie-react";
 
 export default function Loading() {

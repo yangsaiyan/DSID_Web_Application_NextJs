@@ -2,15 +2,19 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import dynamic from "next/dynamic";
-import Navbar from "./components/navbar/Navbar";
+import Navbar from "../components/navbar/Navbar";
+import React, { Suspense, useState } from "react";
+import Loading from "@/components/loading/loading";
 
-const Lottie = dynamic(() => import("lottie-react"), {
+const Lottie = React.lazy(() => import("lottie-react"), {
   ssr: false,
 });
 
 export default function page() {
+  const [isLottieLoading, setLottieLoading] = useState(true);
+
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       <Navbar />
       <Grid2
         style={{
@@ -23,6 +27,9 @@ export default function page() {
       >
         <Lottie
           animationData={animationData}
+          onLoadedData={() => {
+            setLottieLoading(false);
+          }}
           style={{
             width: "100%",
             height: "100%",
@@ -34,6 +41,6 @@ export default function page() {
           Secure, Smart, and Decentralized – Your Student ID, Reimagined.
         </Typography>
       </Grid2>
-    </>
+    </Suspense>
   );
 }

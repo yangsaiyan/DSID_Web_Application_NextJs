@@ -10,9 +10,8 @@ import {
 } from "./styles";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getUser } from "../../../../redux/actions/user_action";
 import { usePathname } from "next/navigation";
-import { formPath, userData } from "../../../../constants";
+import { formPath, userData } from "../../../constants";
 import Loading from "../loading/loading";
 
 export default function form() {
