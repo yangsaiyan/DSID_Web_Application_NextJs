@@ -1,14 +1,14 @@
 import { Box, Button, Grid2, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-export const StyledBox = styled(Box)({
+export const StyledBox = styled(Box)(({ path }) => ({
   position: "relative",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
   width: "768px",
-  height: "660px",
+  height: path?.includes("register") ? "660px" : "fit-content",
   backgroundColor: "white",
   borderRadius: "20px",
   margin: "48px 0 48px 0",
@@ -29,7 +29,7 @@ export const StyledBox = styled(Box)({
     backgroundColor: "rgba(115, 114, 114, 0.77)",
     borderRadius: "50px",
   },
-});
+}));
 
 export const TextFieldContainer = styled(Grid2)({
   display: "flex",
@@ -60,6 +60,23 @@ export const StyledTextField = styled(TextField)({
 
   "& .MuiInputBase-root": {
     borderRadius: "24px",
+  },
+
+  "& .MuiInputBase-input, & input": {
+    color: "black !important",
+    "-webkit-text-fill-color": "black !important",
+  },
+
+  "& .MuiInputBase-input": {
+    color: "black !important",
+    "-webkit-text-fill-color": "black !important",
+  },
+
+  "& .MuiInputBase-input:-webkit-autofill": {
+    WebkitBoxShadow: "0 0 0px 1000px white inset !important",
+    "-webkit-text-fill-color": "black !important",
+    "caret-color": "black !important", // Make sure cursor is visible
+    transition: "background-color 9999s ease-in-out 0s", // Effectively permanent
   },
 });
 

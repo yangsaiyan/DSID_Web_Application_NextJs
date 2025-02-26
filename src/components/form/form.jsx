@@ -35,7 +35,7 @@ export default function form() {
   useEffect(() => {
     if (pathname?.includes("register")) {
       setFormDisplay(formPath?.register);
-    } else if (pathname?.includes("pushEmail")) {
+    } else if (pathname?.includes("push")) {
       setFormDisplay(formPath?.pushEmail);
     }
   }, [pathname]);
@@ -61,7 +61,7 @@ export default function form() {
   return loading ? (
     <Loading />
   ) : (
-    <StyledBox>
+    <StyledBox path={pathname}>
       <TextFieldContainer
         sx={{ paddingTop: pathname?.includes("register") && "96px" }}
       >
