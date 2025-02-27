@@ -13,7 +13,7 @@ export function Providers({ children }) {
     <Provider store={store}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          {/* <Navbar /> */}
+          <Navbar />
           {children}
         </QueryClientProvider>
       </WagmiProvider>

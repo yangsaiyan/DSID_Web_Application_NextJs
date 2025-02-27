@@ -17,7 +17,7 @@ export default function page() {
         height: "100%",
       }}
     >
-      {/* <Suspense fallback={<Loading />}>
+      <Suspense fallback={<></>}>
         <Grid2
           style={{
             display: "flex",
@@ -40,7 +40,7 @@ export default function page() {
             Secure, Smart, and Decentralized – Your Student ID, Reimagined.
           </Typography>
         </Grid2>
-      </Suspense> */}
+      </Suspense>
     </Grid2>
   );
 }
