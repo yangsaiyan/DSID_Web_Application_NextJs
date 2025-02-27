@@ -1,7 +1,6 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
-import Navbar from "../components/navbar/Navbar";
 import React, { Suspense } from "react";
 
 const Navbar = dynamic(() => import("../components/navbar/Navbar"), {
