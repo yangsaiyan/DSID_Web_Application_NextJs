@@ -1,10 +1,13 @@
 "use client";
-
-import Navbar from "@/components/navbar/Navbar";
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
 
-const FormComponent = dynamic(() => import("../../components/form/form"));
+const Navbar = dynamic(() => import("@/components/navbar/Navbar"), {
+  ssr: false,
+});
+const FormComponent = dynamic(() => import("../../components/form/form"), {
+  ssr: false,
+});
 
 export default function PushEmail() {
   return (

@@ -1,7 +1,6 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
-import dynamic from "next/dynamic";
 import Navbar from "../components/navbar/Navbar";
 import React, { Suspense, useState } from "react";
 import Loading from "@/components/loading/loading";

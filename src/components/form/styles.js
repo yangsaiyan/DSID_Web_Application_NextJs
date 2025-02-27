@@ -55,30 +55,20 @@ export const ConnectWalletButton = styled(Button)({
   },
 });
 
-export const StyledTextField = styled(TextField)({
+export const StyledTextField = styled(TextField)(({ theme }) => ({
   width: "100%",
 
   "& .MuiInputBase-root": {
     borderRadius: "24px",
   },
 
-  "& .MuiInputBase-input, & input": {
-    color: "black !important",
+  "& input:-webkit-autofill": {
     "-webkit-text-fill-color": "black !important",
+    "-webkit-box-shadow": "0 0 0 100px white inset !important",
+    "transition-delay": "9999s",
+    "transition-property": "background-color, color",
   },
-
-  "& .MuiInputBase-input": {
-    color: "black !important",
-    "-webkit-text-fill-color": "black !important",
-  },
-
-  "& .MuiInputBase-input:-webkit-autofill": {
-    WebkitBoxShadow: "0 0 0px 1000px white inset !important",
-    "-webkit-text-fill-color": "black !important",
-    "caret-color": "black !important", // Make sure cursor is visible
-    transition: "background-color 9999s ease-in-out 0s", // Effectively permanent
-  },
-});
+}));
 
 export const CTAButtonContainer = styled(Grid2)({
   display: "flex",
