@@ -8,9 +8,7 @@ const Loading = dynamic(() => import("@/components/loading/loading"), {
   ssr: false,
 });
 
-const Lottie = React.lazy(() => import("lottie-react"), {
-  ssr: false,
-});
+const Lottie = React.lazy(() => import("lottie-react"));
 
 export default function page() {
   return (
