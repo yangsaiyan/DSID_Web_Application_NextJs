@@ -12,9 +12,11 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
 import { formPath, userData } from "../../../constants";
-// import Loading from "../loading/loading";
 import emailjs from "@emailjs/browser";
 import { isEmpty } from "lodash";
+import dynamic from "next/dynamic";
+
+const Loading = dynamic(() => import("../components/loading/loading"), { ssr: false });
 
 export default function form() {
   const dispatch = useDispatch();
@@ -99,8 +101,7 @@ export default function form() {
   const formInputErrorValidation = () => {};
 
   return loading ? (
-    // <Loading />
-    <></>
+    <Loading />
   ) : (
     <StyledBox
       ref={formRef}
