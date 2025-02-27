@@ -16,7 +16,7 @@ import emailjs from "@emailjs/browser";
 import { isEmpty } from "lodash";
 import dynamic from "next/dynamic";
 
-const Loading = dynamic(() => import("../components/loading/loading"), { ssr: false });
+const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
 export default function form() {
   const dispatch = useDispatch();
