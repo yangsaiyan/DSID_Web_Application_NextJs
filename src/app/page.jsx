@@ -4,10 +4,6 @@ import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-const Navbar = dynamic(() => import("../components/navbar/Navbar"), {
-  ssr: false,
-});
-
 const Loading = dynamic(() => import("@/components/loading/loading"), {
   ssr: false,
 });

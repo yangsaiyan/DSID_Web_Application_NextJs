@@ -55,7 +55,7 @@ export const ConnectWalletButton = styled(Button)({
   },
 });
 
-export const StyledTextField = styled(TextField)(({ theme }) => ({
+export const StyledTextField = styled(TextField)(() => ({
   width: "100%",
 
   "& .MuiInputBase-root": {
@@ -63,10 +63,10 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 
   "& input:-webkit-autofill": {
-    "-webkit-text-fill-color": "black !important",
-    "-webkit-box-shadow": "0 0 0 100px white inset !important",
-    "transition-delay": "9999s",
-    "transition-property": "background-color, color",
+    WebkitTextFillColor: "black !important",
+    WebkitBoxShadow: "0 0 0 100px white inset !important",
+    transitionDelay: "9999s",
+    transitionProperty: "background-color, color",
   },
 }));
 

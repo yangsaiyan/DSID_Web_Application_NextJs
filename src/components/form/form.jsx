@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
 import { formPath, userData } from "../../../constants";
 import Loading from "../loading/loading";
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 import { isEmpty } from "lodash";
 
 export default function form() {
@@ -46,13 +46,12 @@ export default function form() {
   }, [pathname]);
 
   useEffect(() => {
-
     console.log(params.get("studentId"));
     setFormData({
       ...formData,
-      studentId: params?.get("studentId")
+      studentId: params?.get("studentId"),
     });
-  }, [])
+  }, []);
 
   useEffect(() => {
     filterFormInput(formDisplay);
@@ -94,7 +93,6 @@ export default function form() {
           }
         );
     } else if (pathname?.includes("register")) {
-
     }
   };
 
@@ -103,7 +101,12 @@ export default function form() {
   return loading ? (
     <Loading />
   ) : (
-    <StyledBox ref={formRef} component="form" onSubmit={submitForm} path={pathname}>
+    <StyledBox
+      ref={formRef}
+      component="form"
+      onSubmit={submitForm}
+      path={pathname}
+    >
       <TextFieldContainer
         sx={{ paddingTop: pathname?.includes("register") && "96px" }}
       >
@@ -111,7 +114,12 @@ export default function form() {
           return (
             <>
               {key !== "walletAddress" && key !== "token" && (
-                <StyledTextField label={userData[key]} name={key} value={formData[key]} disabled={!isEmpty(formData[key])} />
+                <StyledTextField
+                  label={value}
+                  name={key}
+                  defaultValue={!isEmpty(formData[key]) ? formData[key] : ""}
+                  disabled={!isEmpty(formData[key])}
+                />
               )}
               {key === "walletAddress" && (
                 <Grid2
@@ -122,7 +130,7 @@ export default function form() {
                   gap={"5px"}
                   width={"100%"}
                 >
-                  <StyledTextField label={userData[key]} />
+                  <StyledTextField label={value} />
                   <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                 </Grid2>
               )}
@@ -132,11 +140,7 @@ export default function form() {
       </TextFieldContainer>
       <CTAButtonContainer>
         <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton
-          type={"submit"}
-        >
-          Submit
-        </CTAButton>
+        <CTAButton type={"submit"}>Submit</CTAButton>
       </CTAButtonContainer>
     </StyledBox>
   );
