@@ -2,7 +2,7 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
-import { Loading } from "../components/loading/loading";
+import Loading from "../components/loading/loading";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
@@ -32,11 +32,11 @@ export default function page() {
             style={{
               width: "100%",
               height: "100%",
-              maxWidth: "60%",
-              maxHeight: "60%",
+              maxWidth: "70%",
+              maxHeight: "70%",
             }}
           />
-          <Typography sx={{ fontFamily: "cursive", textAlign: "center" }}>
+          <Typography sx={{ fontFamily: "cursive", textAlign: "center", color: "white" }}>
             Secure, Smart, and Decentralized – Your Student ID, Reimagined.
           </Typography>
         </Grid2>
