@@ -1,10 +1,10 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
-import animationData from "../../public/assets/lotties/blockchain.json";
+//import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
 // import Loading from "../components/loading/loading";
 
-const Lottie = React.lazy(() => import("lottie-react"));
+// const Lottie = React.lazy(() => import("lottie-react"));
 
 export default function page() {
   return (
@@ -17,7 +17,7 @@ export default function page() {
         height: "100%",
       }}
     >
-      {/* <Suspense fallback={<></>}>
+      <Suspense fallback={<></>}>
         <Grid2
           style={{
             display: "flex",
@@ -27,7 +27,7 @@ export default function page() {
             height: "100%",
           }}
         >
-          <Lottie
+          {/* <Lottie
             animationData={animationData}
             style={{
               width: "100%",
@@ -35,12 +35,12 @@ export default function page() {
               maxWidth: "70%",
               maxHeight: "70%",
             }}
-          />
+          /> */}
           <Typography sx={{ fontFamily: "cursive", textAlign: "center", color: "white" }}>
             Secure, Smart, and Decentralized – Your Student ID, Reimagined.
           </Typography>
         </Grid2>
-      </Suspense> */}
+      </Suspense>
     </Grid2>
   );
 }
