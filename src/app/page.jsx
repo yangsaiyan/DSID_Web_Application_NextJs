@@ -2,9 +2,7 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
-import dynamic from "next/dynamic";
-
-// const Loading = dynamic(() => import("@/components/loading/loading"));
+import { Loading } from "../components/loading/loading";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
@@ -19,7 +17,7 @@ export default function page() {
         height: "100%",
       }}
     >
-      <Suspense fallback={<></>}>
+      <Suspense fallback={<Loading />}>
         <Grid2
           style={{
             display: "flex",
