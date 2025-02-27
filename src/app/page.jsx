@@ -2,7 +2,7 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
-import Loading from "../components/loading/loading";
+// import Loading from "../components/loading/loading";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
