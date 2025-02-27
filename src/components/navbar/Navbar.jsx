@@ -26,7 +26,7 @@ export default function Navbar(props) {
 
   return (
     <Grid2 ref={ref} sx={{ padding: "2.5% 5% 0 5%", width: "100%" }}>
-      {/* <NavbarContainer>
+      <NavbarContainer>
         <NavbarContentContainer>
           <Grid2
             display={"flex"}
@@ -54,7 +54,7 @@ export default function Navbar(props) {
           </NavbarContent>
         </NavbarContentContainer>
         <ConnectWallet />
-      </NavbarContainer> */}
+      </NavbarContainer>
     </Grid2>
   );
 }
