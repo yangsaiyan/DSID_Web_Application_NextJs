@@ -4,23 +4,23 @@ import React, { useEffect, useState } from "react";
 import Loading from "../components/loading/loading";
 import dynamic from "next/dynamic";
 
-const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+// const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 export default function page() {
   const [animationData, setAnimationData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    import("../../public/assets/lotties/blockchain.json")
-      .then((data) => {
-        setAnimationData(data.default || data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load animation:", err);
-        setIsLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   import("../../public/assets/lotties/blockchain.json")
+  //     .then((data) => {
+  //       setAnimationData(data.default || data);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to load animation:", err);
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   return (
     <Grid2
@@ -44,7 +44,7 @@ export default function page() {
             height: "100%",
           }}
         >
-          <Lottie
+          {/* <Lottie
             animationData={animationData}
             style={{
               width: "100%",
@@ -52,7 +52,7 @@ export default function page() {
               maxWidth: "70%",
               maxHeight: "70%",
             }}
-          />
+          /> */}
           <Typography
             sx={{ fontFamily: "cursive", textAlign: "center", color: "white" }}
           >
