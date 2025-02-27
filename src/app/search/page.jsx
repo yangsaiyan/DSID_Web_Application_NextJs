@@ -1,4 +1,8 @@
-import Navbar from "../../components/navbar/Navbar";
+
+
+const Navbar = dynamic(() => import("../../components/navbar/Navbar"), {
+  ssr: false,
+});
 
 export default function Search() {
   return (
