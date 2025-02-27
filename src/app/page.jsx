@@ -1,7 +1,7 @@
 "use client";
 import { Grid2, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Loading from "../components/loading/loading";
+// import Loading from "../components/loading/loading";
 import dynamic from "next/dynamic";
 
 // const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
@@ -33,7 +33,8 @@ export default function page() {
       }}
     >
       {isLoading ? (
-        <Loading />
+        // <Loading />
+        <></>
       ) : (
         <Grid2
           style={{

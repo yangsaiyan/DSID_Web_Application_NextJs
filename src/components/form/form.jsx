@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
 import { formPath, userData } from "../../../constants";
-import Loading from "../loading/loading";
+// import Loading from "../loading/loading";
 import emailjs from "@emailjs/browser";
 import { isEmpty } from "lodash";
 
@@ -99,7 +99,8 @@ export default function form() {
   const formInputErrorValidation = () => {};
 
   return loading ? (
-    <Loading />
+    // <Loading />
+    <></>
   ) : (
     <StyledBox
       ref={formRef}
