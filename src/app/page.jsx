@@ -50,7 +50,7 @@ export default function page() {
             style={{
               width: "100%",
               height: "100%",
-              maxWidth: "70%",
+              maxWidth: "100%",
               maxHeight: "70%",
             }}
           />

@@ -14,7 +14,7 @@ export const ConnectWalletButton = styled(Box)({
     cursor: "pointer",
 
     ":hover": {
-        textShadow: "0px 0px 5px rgba(0,0,0,0.7)",
+        textShadow: "0px 0px 1px rgba(0,0,0,0.7)",
     },
 })
 

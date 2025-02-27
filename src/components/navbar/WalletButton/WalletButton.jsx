@@ -67,7 +67,12 @@ export function WalletButton() {
       </Grid2>
     </Grid2>
   ) : (
-    <Grid2>
+    <Grid2
+      backgroundColor={"rgb(121, 121, 121)"}
+      sx={{
+        borderRadius: "12px",
+      }}
+    >
       {connectors.map((connector) => (
         <WalletOption
           key={connector.uid}
