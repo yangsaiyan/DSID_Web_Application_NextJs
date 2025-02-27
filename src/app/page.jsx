@@ -4,9 +4,7 @@ import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 
-const Loading = dynamic(() => import("@/components/loading/loading"), {
-  ssr: false,
-});
+const Loading = dynamic(() => import("@/components/loading/loading"));
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
