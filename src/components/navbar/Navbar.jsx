@@ -9,7 +9,7 @@ import {
   StyledText,
   TextContainer,
 } from "./styles";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount } from "wagmi";
 import { Account } from "./Account/account";
 import { WalletButton } from "./WalletButton/WalletButton";
 

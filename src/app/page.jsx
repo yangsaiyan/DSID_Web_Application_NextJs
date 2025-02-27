@@ -2,8 +2,15 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import Navbar from "../components/navbar/Navbar";
-import React, { Suspense, useState } from "react";
-import Loading from "@/components/loading/loading";
+import React, { Suspense } from "react";
+
+const Navbar = dynamic(() => import("../components/navbar/Navbar"), {
+  ssr: false,
+});
+
+const Loading = dynamic(() => import("@/components/loading/loading"), {
+  ssr: false,
+});
 
 const Lottie = React.lazy(() => import("lottie-react"), {
   ssr: false,
