@@ -2,6 +2,7 @@
 import { Grid2, Typography } from "@mui/material";
 import animationData from "../../public/assets/lotties/blockchain.json";
 import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
 
 const Navbar = dynamic(() => import("../components/navbar/Navbar"), {
   ssr: false,
@@ -27,7 +28,6 @@ export default function page() {
       }}
     >
       <Suspense fallback={<Loading />}>
-        <Navbar />
         <Grid2
           style={{
             display: "flex",
