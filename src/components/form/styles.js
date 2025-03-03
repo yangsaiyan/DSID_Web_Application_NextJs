@@ -2,7 +2,7 @@ import { Box, Button, Grid2, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const StyledBox = styled(Box)(({ path }) => ({
-  position: "relative",
+  position: "absolute",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
