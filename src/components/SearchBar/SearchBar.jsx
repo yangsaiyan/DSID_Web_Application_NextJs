@@ -1,3 +1,4 @@
+"use client";
 import { Button, Grid2, TextField } from "@mui/material";
 import { getStudent } from "hooks/GunDB";
 import { useState } from "react";

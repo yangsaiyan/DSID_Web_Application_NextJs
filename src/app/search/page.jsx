@@ -1,5 +1,4 @@
 "use client";
-
 import SearchBar from "@/components/SearchBar/SearchBar";
 import { Grid2 } from "@mui/material";
 
