@@ -19,10 +19,12 @@ import { useAccount, useSignMessage } from "wagmi";
 import {
   decryptStudentData,
   encryptStudentData,
+  getSessionSignatures,
   sessionSigs,
   useCreateSignatureRequest,
 } from "hooks/LitProtocol";
 import { setStudent } from "../../../redux/actions/student_action";
+import { getStudent, storeStudent } from "hooks/GunDB";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
@@ -33,11 +35,12 @@ export default function form() {
 
   const formRef = useRef(null);
 
-  const { address } = useAccount();
+  const account = useAccount();
+  const { signMessageAsync } = useSignMessage();
 
   const [formData, setFormData] = useState({
-    name: "1",
-    studentId: "1",
+    name: "Lim",
+    studentId: "1112",
     nric: "1",
     email: "1",
     faculty: "1",
@@ -45,9 +48,9 @@ export default function form() {
     race: "1",
     gender: "1",
     nationality: "1",
-    phoneNumber: "1",
+    phoneNumber: "11112",
     permanentHomeAddress: "1",
-    walletAddress: address,
+    walletAddress: account?.address,
   });
   const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
   const [formInput, setFormInput] = useState({});
@@ -72,10 +75,6 @@ export default function form() {
     filterFormInput(formDisplay);
     setLoading(false);
   }, [formDisplay]);
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   const filterFormInput = (formDisplay) => {
     for (const [key, value] of Object.entries(userData)) {
@@ -204,16 +203,14 @@ export default function form() {
           nationality: "1",
           phoneNumber: "1",
           permanentHomeAddress: "1",
-          walletAddress: address,
+          walletAddress: account?.address,
         })
       );
-      const { ciphertext, dataToEncryptHash } = encryptStudentData(
-        address,
-        formData
-      );
-      const sessionSignature = sessionSigs(dataToEncryptHash, address);
+      storeStudent(formData);
+      // getStudent(account?.address);
     }
   };
+
   const formInputErrorValidation = async () => {};
 
   return loading ? (

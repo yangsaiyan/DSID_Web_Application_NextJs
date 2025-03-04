@@ -1,11 +1,9 @@
-import { LitNodeClient } from "@lit-protocol/lit-node-client";
+import {
+  checkAndSignAuthMessage,
+  LitNodeClient,
+} from "@lit-protocol/lit-node-client";
 import { LIT_NETWORK, LIT_ABILITY } from "@lit-protocol/constants";
 import { encryptString, decryptToString } from "@lit-protocol/encryption";
-import {
-  LitAccessControlConditionResource,
-  createSiweMessage,
-  generateAuthSig,
-} from "@lit-protocol/auth-helpers";
 
 const litNodeClient = new LitNodeClient({
   litNetwork: LIT_NETWORK.DatilDev,
@@ -15,7 +13,6 @@ const litNodeClient = new LitNodeClient({
 async function connectLitClient() {
   if (!litNodeClient.connected) {
     await litNodeClient.connect();
-    console.log("✅ LitNodeClient connected");
   }
 }
 connectLitClient();
@@ -29,7 +26,7 @@ const accessControlConditions = (studentWallet) => [
     parameters: [":userAddress"],
     returnValueTest: {
       comparator: "=",
-      value: studentWallet,
+      value: studentWallet.toLowerCase(),
     },
   },
   {
@@ -43,12 +40,25 @@ const accessControlConditions = (studentWallet) => [
     parameters: [":userAddress"],
     returnValueTest: {
       comparator: "=",
-      value: process.env.NEXT_PUBLIC_ADMIN_WALLET,
+      value: process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase(),
     },
   },
 ];
 
 export async function encryptStudentData(studentWallet, studentData) {
+  if (!litNodeClient.connected) {
+    await litNodeClient.connect();
+  }
+
+  if (!studentWallet) {
+    throw new Error("Student wallet address is required for encryption");
+  }
+
+  if (!accessControlConditions || accessControlConditions.length === 0) {
+    console.error("Error: Access Control Conditions are missing");
+    return;
+  }
+
   const dataString = JSON.stringify(studentData);
 
   const { ciphertext, dataToEncryptHash } = await encryptString(
@@ -63,18 +73,47 @@ export async function encryptStudentData(studentWallet, studentData) {
 }
 
 export async function decryptStudentData(
-  encryptedString,
+  ciphertext,
   dataToEncryptHash,
-  studentWallet
+  address
 ) {
+  if (!litNodeClient.connected) {
+    await litNodeClient.connect();
+  }
   try {
+    const authSig = await checkAndSignAuthMessage({
+      chain: "ethereum",
+      wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+    });
+    const accConditions = accessControlConditions(address);
+
+    if (!ciphertext) {
+      console.error("Error: Encrypted string is undefined or empty");
+      return;
+    }
+
+    if (!authSig || !authSig.sig) {
+      console.error("Error: AuthSig is missing or invalid");
+      return;
+    }
+
+    if (!accessControlConditions || accessControlConditions.length === 0) {
+      console.error("Error: Access Control Conditions are missing");
+      return;
+    }
+
+    if (!dataToEncryptHash) {
+      console.error("Error: Data hash is missing");
+      return;
+    }
+
     const decryptedData = await decryptToString(
       {
+        accessControlConditions: accessControlConditions(address),
         chain: "ethereum",
-        encryptedString,
+        ciphertext,
         dataToEncryptHash,
-        accessControlConditions: accessControlConditions(studentWallet),
-        sessionSigs,
+        authSig,
       },
       litNodeClient
     );
@@ -83,42 +122,4 @@ export async function decryptStudentData(
     console.error("Decryption failed:", error);
     return null;
   }
-}
-export async function sessionSigs(dataToEncryptHash, address) {
-  const signature = await litNodeClient.getSessionSigs({
-    chain: "ethereum",
-    expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(),
-    resourceAbilityRequests: [
-      {
-        resource: new LitAccessControlConditionResource(
-          await LitAccessControlConditionResource.generateResourceString(
-            accessControlConditions,
-            dataToEncryptHash
-          )
-        ),
-        ability: LIT_ABILITY.AccessControlConditionDecryption,
-      },
-    ],
-    authNeededCallback: async ({
-      uri,
-      expiration,
-      resourceAbilityRequests,
-    }) => {
-      const toSign = await createSiweMessage({
-        uri,
-        expiration,
-        resources: resourceAbilityRequests,
-        walletAddress: address,
-        nonce: await litNodeClient.getLatestBlockhash(),
-        litNodeClient,
-      });
-
-      return await generateAuthSig({
-        signer: ethersWallet,
-        toSign,
-      });
-    },
-  });
-  console.log(signature);
-  return signature;
 }

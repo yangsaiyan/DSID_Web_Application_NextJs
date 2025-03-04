@@ -1,11 +1,14 @@
 "use client";
 
+import SearchBar from "@/components/SearchBar/SearchBar";
+import { Grid2 } from "@mui/material";
+
 export default function Search() {
   return (
     <>
-    <div>
-      this is a search page
-    </div>
+    <Grid2>
+      <SearchBar />
+    </Grid2>
     </>
   );
 }
