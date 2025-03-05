@@ -117,6 +117,7 @@ export async function decryptStudentData(
       },
       litNodeClient
     );
+    console.log("plaintext",decryptedData)
     return JSON.parse(decryptedData);
   } catch (error) {
     console.error("Decryption failed:", error);
