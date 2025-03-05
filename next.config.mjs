@@ -13,11 +13,6 @@ const nextConfig = {
         };
         return config;
       }
-  
-  // Optional: if you're using experimental features
-  experimental: {
-    // Add any experimental configs if needed
-  }
 };
 
 export default nextConfig;
