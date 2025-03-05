@@ -1,4 +1,4 @@
-import Gun from "gun";
+import Gun from 'gun/gun';
 import { decryptStudentData, encryptStudentData } from "./LitProtocol";
 import "gun/sea";
 
