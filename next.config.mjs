@@ -17,7 +17,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       'gun/sea': path.resolve(__dirname, './node_modules/gun/sea.js'),
-      'text-encoding': path.resolve(__dirname, './node_module/gun/lib/text-encoding'),
+      'text-encoding': path.resolve(__dirname, './node_module/gun/lib/text-encoding/lib/encoding.js'),
     };
 
     return config;
