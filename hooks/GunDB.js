@@ -3,11 +3,16 @@ import { decryptStudentData, encryptStudentData } from "./LitProtocol";
 import "gun/sea";
 import "gun/axe";
 
-const gun = Gun({ peers: ["https://gundb.yangz030715.repl.co/"] });
+const gun = Gun({
+  peers: [
+    process.env.NEXT_PUBLIC_GunDB_REPLIT_REPAY_URL,
+    "https://gun-manhattan.herokuapp.com/gun",
+  ],
+});
 
 export async function storeStudent(c) {
   const user = gun.user();
-  user.auth("ziyang0715@1utar.my", "20030715z", async (ack) => {
+  user.auth(process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL, process.env.NEXT_PUBLIC_GunDB_AUTH_PASS, async (ack) => {
     const studentData = {
       studentID: c?.studentID,
       name: c?.name,
@@ -46,7 +51,7 @@ export async function storeStudent(c) {
 
 export async function getStudent(address) {
   const user = gun.user();
-  user.auth("ziyang0715@1utar.my", "20030715z", async (ack) => {
+  user.auth(process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL, process.env.NEXT_PUBLIC_GunDB_AUTH_PASS, async (ack) => {
     console.log(address);
     user
       .get("students")
