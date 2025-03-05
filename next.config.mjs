@@ -1,26 +1,32 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    webpack: (config, { isServer }) => {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        buffer: require.resolve('buffer/'),
-        stream: require.resolve('stream-browserify'),
-        path: require.resolve('path-browserify'),
-        crypto: require.resolve('crypto-browserify'),
-      };
+  webpack: (config, { isServer }) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    };
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'gun/sea': path.resolve(__dirname, './node_modules/gun/sea.js'),
+      'text-encoding': path.resolve(__dirname, './node_module/gun/lib/text-encoding'),
+    };
+
+    return config;
+  },
   
-      config.plugins.push(
-        new (require('webpack')).ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
-          process: 'process/browser',
-        })
-      );
-  
-      return config;
-    },
-  };
-  
-  export default nextConfig;
+  // Optional: if you're using experimental features
+  experimental: {
+    // Add any experimental configs if needed
+  }
+};
+
+export default nextConfig;
