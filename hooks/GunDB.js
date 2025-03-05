@@ -1,5 +1,4 @@
 import Gun from "gun";
-import "gun/sea";
 import { decryptStudentData, encryptStudentData } from "./LitProtocol";
 
 const gun = Gun();
