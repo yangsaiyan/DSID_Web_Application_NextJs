@@ -1,7 +1,6 @@
 "use client";
 import "./globals.css";
 import { Providers } from "./Providers";
-import 'text-encoding';
 
 if (typeof window !== 'undefined') {
   require('text-encoding');

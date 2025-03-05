@@ -1,8 +1,7 @@
 import Gun from "gun";
 import { decryptStudentData, encryptStudentData } from "./LitProtocol";
-import SEA from 'gun/sea';
-
-import "gun/axe";
+import "gun/sea";
+import 'text-encoding';
 
 const gun = Gun({
   peers: [
