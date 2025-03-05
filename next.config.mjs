@@ -6,22 +6,13 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config, { isServer }) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    };
-
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'gun/sea': path.resolve(__dirname, './node_modules/gun/sea.js'),
-      'text-encoding': path.resolve(__dirname, './node_module/gun/lib/text-encoding/lib/encoding.js'),
-    };
-
-    return config;
-  },
+    webpack: (config) => {
+        config.resolve.fallback = {
+          ...config.resolve.fallback,
+          'text-encoding': require.resolve('text-encoding-polyfill'),
+        };
+        return config;
+      }
   
   // Optional: if you're using experimental features
   experimental: {

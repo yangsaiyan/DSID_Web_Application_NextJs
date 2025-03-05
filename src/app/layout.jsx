@@ -2,10 +2,6 @@
 import "./globals.css";
 import { Providers } from "./Providers";
 
-if (typeof window !== 'undefined') {
-  require('text-encoding');
-}
-
 export default function RootLayout({ children }) {
   return (
     <html
