@@ -50,7 +50,7 @@ export default function form() {
     nationality: "1",
     phoneNumber: "11112",
     permanentHomeAddress: "1",
-    walletAddress: account?.address,
+    walletAddress: account?.address || "",
   });
   const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
   const [formInput, setFormInput] = useState({});
@@ -61,6 +61,8 @@ export default function form() {
       setFormDisplay(formPath?.register);
     } else if (pathname?.includes("push")) {
       setFormDisplay(formPath?.pushEmail);
+    } else if (pathname?.includes("search")){
+      setFormDisplay(formPath?.search);
     }
   }, [pathname]);
 
@@ -223,7 +225,7 @@ export default function form() {
       path={pathname}
     >
       <TextFieldContainer
-        sx={{ paddingTop: pathname?.includes("register") && "486px" }}
+        sx={{ paddingTop: pathname?.includes("register") ? "486px" : pathname?.includes("search") && "386px" }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (

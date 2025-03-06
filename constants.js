@@ -14,6 +14,20 @@ export const formPath = {
     "course",
     "nationality",
   ],
+  search: [
+    "name",
+    "studentId",
+    "nric",
+    "email",
+    "phoneNumber",
+    "permanentHomeAddress",
+    "token",
+    "race",
+    "gender",
+    "faculty",
+    "course",
+    "nationality",
+  ],
   pushEmail: ["email", "studentId", "faculty", "course"],
 };
 

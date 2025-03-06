@@ -8,7 +8,7 @@ export const StyledBox = styled(Box)(({ path }) => ({
   justifyContent: "center",
   alignItems: "center",
   width: "768px",
-  height: path?.includes("register") ? "660px" : "fit-content",
+  height: (path?.includes("register") || path?.includes("search")) ? "660px" : "fit-content",
   backgroundColor: "white",
   borderRadius: "20px",
   margin: "48px 0 48px 0",
