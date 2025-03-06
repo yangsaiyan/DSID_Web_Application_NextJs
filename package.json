@@ -34,12 +34,8 @@
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
     "styled-components": "^6.1.14",
-    "text-encoding": "^0.7.0",
     "viem": "^2.23.2",
     "wagmi": "^2.14.11",
     "yarn": "^1.22.22"
-  },
-  "devDependencies": {
-    "null-loader": "^4.0.1"
   }
 }

@@ -1,10 +1,13 @@
 "use client";
-import SearchBar from "@/components/SearchBar/SearchBar";
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
+  ssr: false,
+});
+
+const SearchBar = dynamic(() => import("@/components/SearchBar/SearchBar"), {
   ssr: false,
 });
 
