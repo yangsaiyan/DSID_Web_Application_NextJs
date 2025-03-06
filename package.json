@@ -37,5 +37,8 @@
     "viem": "^2.23.2",
     "wagmi": "^2.14.11",
     "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "null-loader": "^4.0.1"
   }
 }
