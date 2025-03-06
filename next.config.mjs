@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     webpack: (config) => {
-      // Ignore the missing module
-      config.resolve.alias['./lib/text-encoding'] = false;
+      // Use null-loader to ignore the module
+      config.module.rules.push({
+        test: /\/lib\/text-encoding\.js$/, // Match the problematic module
+        use: 'null-loader', // Ignore it
+      });
       return config;
     },
   };
