@@ -1,5 +1,4 @@
-import Navbar from "../components/navbar/Navbar.jsx"
-
+"use client";
 export default function Homepage() {
     return (
       <div>

@@ -6,7 +6,7 @@ const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
 });
 
-export default function page() {
+export default function PushEmail() {
   return (
     <Grid2
       sx={{
