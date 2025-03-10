@@ -61,7 +61,7 @@ export default function form() {
       setFormDisplay(formPath?.register);
     } else if (pathname?.includes("push")) {
       setFormDisplay(formPath?.pushEmail);
-    } else if (pathname?.includes("search")){
+    } else if (pathname?.includes("search")) {
       setFormDisplay(formPath?.search);
     }
   }, [pathname]);
@@ -70,7 +70,7 @@ export default function form() {
     setFormData({
       ...formData,
       studentId: params?.get("studentId") || "",
-      email: params?.get("email") || "",
+      email: decodeURI(params?.get("email")) || "",
       faculty: params?.get("faculty") || "",
       course: params?.get("course") || "",
     });
@@ -81,7 +81,9 @@ export default function form() {
     setLoading(false);
   }, [formDisplay]);
 
-  useEffect(() => {console.log(formData)}, [formData]);
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   const filterFormInput = (formDisplay) => {
     for (const [key, value] of Object.entries(userData)) {
@@ -137,7 +139,7 @@ export default function form() {
       case "email":
         setFormData((prev) => ({
           ...prev,
-          email: e?.target?.value,
+          email: encodeURI(e?.target?.value),
         }));
         break;
       case "faculty":
@@ -197,9 +199,7 @@ export default function form() {
           }
         );
     } else if (pathname?.includes("register")) {
-      dispatch(
-        setStudent(formData)
-      );
+      dispatch(setStudent(formData));
       storeStudent(formData);
       // getStudent(account?.address);
     }
@@ -217,7 +217,11 @@ export default function form() {
       path={pathname}
     >
       <TextFieldContainer
-        sx={{ paddingTop: pathname?.includes("register") ? "486px" : pathname?.includes("search") && "386px" }}
+        sx={{
+          paddingTop: pathname?.includes("register")
+            ? "486px"
+            : pathname?.includes("search") && "386px",
+        }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
@@ -228,7 +232,8 @@ export default function form() {
                   name={key}
                   value={!isEmpty(formData[key]) ? formData[key] : ""}
                   disabled={
-                    (!isEmpty(formData[key]) && !pathname.includes("push")) &&
+                    !isEmpty(formData[key]) &&
+                    !pathname.includes("push") &&
                     (key == "studentId" ||
                       key == "email" ||
                       key == "faculty" ||
@@ -237,17 +242,19 @@ export default function form() {
                   onChange={onChange}
                 />
               )}
-              {
-                key === "gender" && (
-                  <Grid2 width={"100%"}>
-                    <InputLabel>Gender</InputLabel>
-                    <StyledSelect value={formData[key]} onChange={onChange} name={key}>
-                      <MenuItem value={"male"}>Male</MenuItem>
-                      <MenuItem value={"female"}>Female</MenuItem>
-                    </StyledSelect>
-                  </Grid2>
-                )
-              }
+              {key === "gender" && (
+                <Grid2 width={"100%"}>
+                  <InputLabel>Gender</InputLabel>
+                  <StyledSelect
+                    value={formData[key]}
+                    onChange={onChange}
+                    name={key}
+                  >
+                    <MenuItem value={"male"}>Male</MenuItem>
+                    <MenuItem value={"female"}>Female</MenuItem>
+                  </StyledSelect>
+                </Grid2>
+              )}
               {key === "walletAddress" && (
                 <Grid2
                   display={"flex"}
