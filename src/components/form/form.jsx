@@ -1,10 +1,11 @@
 "use client";
-import { Grid2 } from "@mui/material";
+import { Grid2, InputLabel, MenuItem, Select } from "@mui/material";
 import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
   StyledBox,
+  StyledSelect,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -36,20 +37,19 @@ export default function form() {
   const formRef = useRef(null);
 
   const account = useAccount();
-  const { signMessageAsync } = useSignMessage();
 
   const [formData, setFormData] = useState({
-    name: "Lim",
-    studentId: "1112",
-    nric: "1",
-    email: "1",
-    faculty: "1",
-    course: "1",
-    race: "1",
-    gender: "1",
-    nationality: "1",
-    phoneNumber: "11112",
-    permanentHomeAddress: "1",
+    name: "",
+    studentId: "",
+    nric: "",
+    email: "",
+    faculty: "",
+    course: "",
+    race: "",
+    gender: "",
+    nationality: "",
+    phoneNumber: "",
+    permanentHomeAddress: "",
     walletAddress: account?.address || "",
   });
   const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
@@ -69,7 +69,10 @@ export default function form() {
   useEffect(() => {
     setFormData({
       ...formData,
-      studentId: params?.get("studentId"),
+      studentId: params?.get("studentId") || "",
+      email: params?.get("email") || "",
+      faculty: params?.get("faculty") || "",
+      course: params?.get("course") || "",
     });
   }, []);
 
@@ -77,6 +80,8 @@ export default function form() {
     filterFormInput(formDisplay);
     setLoading(false);
   }, [formDisplay]);
+
+  useEffect(() => {console.log(formData)}, [formData]);
 
   const filterFormInput = (formDisplay) => {
     for (const [key, value] of Object.entries(userData)) {
@@ -193,20 +198,7 @@ export default function form() {
         );
     } else if (pathname?.includes("register")) {
       dispatch(
-        setStudent({
-          name: "1",
-          studentId: "1",
-          nric: "1",
-          email: "1",
-          faculty: "1",
-          course: "1",
-          race: "1",
-          gender: "1",
-          nationality: "1",
-          phoneNumber: "1",
-          permanentHomeAddress: "1",
-          walletAddress: account?.address,
-        })
+        setStudent(formData)
       );
       storeStudent(formData);
       // getStudent(account?.address);
@@ -230,13 +222,13 @@ export default function form() {
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
             <>
-              {key !== "walletAddress" && key !== "token" && (
+              {key !== "walletAddress" && key !== "gender" && (
                 <StyledTextField
                   label={value}
                   name={key}
                   value={!isEmpty(formData[key]) ? formData[key] : ""}
                   disabled={
-                    !isEmpty(formData[key]) &&
+                    (!isEmpty(formData[key]) && !pathname.includes("push")) &&
                     (key == "studentId" ||
                       key == "email" ||
                       key == "faculty" ||
@@ -245,6 +237,17 @@ export default function form() {
                   onChange={onChange}
                 />
               )}
+              {
+                key === "gender" && (
+                  <Grid2 width={"100%"}>
+                    <InputLabel>Gender</InputLabel>
+                    <StyledSelect value={formData[key]} onChange={onChange} name={key}>
+                      <MenuItem value={"male"}>Male</MenuItem>
+                      <MenuItem value={"female"}>Female</MenuItem>
+                    </StyledSelect>
+                  </Grid2>
+                )
+              }
               {key === "walletAddress" && (
                 <Grid2
                   display={"flex"}
