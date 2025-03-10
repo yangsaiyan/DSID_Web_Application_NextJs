@@ -70,7 +70,7 @@ export default function form() {
     setFormData({
       ...formData,
       studentId: params?.get("studentId") || "",
-      email: decodeURI(params?.get("email")) || "",
+      email: params?.get("email") || "",
       faculty: params?.get("faculty") || "",
       course: params?.get("course") || "",
     });
@@ -139,7 +139,7 @@ export default function form() {
       case "email":
         setFormData((prev) => ({
           ...prev,
-          email: encodeURI(e?.target?.value),
+          email: e?.target?.value,
         }));
         break;
       case "faculty":
