@@ -21,7 +21,7 @@ const accessControlConditions = (studentWallet) => [
   {
     contractAddress: "",
     standardContractType: "",
-    chain: "ethereum",
+    chain: "amoy",
     method: "",
     parameters: [":userAddress"],
     returnValueTest: {
@@ -35,7 +35,7 @@ const accessControlConditions = (studentWallet) => [
   {
     contractAddress: "",
     standardContractType: "",
-    chain: "ethereum",
+    chain: "amoy",
     method: "",
     parameters: [":userAddress"],
     returnValueTest: {
@@ -82,7 +82,7 @@ export async function decryptStudentData(
   }
   try {
     const authSig = await checkAndSignAuthMessage({
-      chain: "ethereum",
+      chain: "amoy",
       wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
     });
     const accConditions = accessControlConditions(address);
@@ -110,7 +110,7 @@ export async function decryptStudentData(
     const decryptedData = await decryptToString(
       {
         accessControlConditions: accessControlConditions(address),
-        chain: "ethereum",
+        chain: "amoy",
         ciphertext,
         dataToEncryptHash,
         authSig,

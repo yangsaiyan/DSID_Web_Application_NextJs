@@ -2,9 +2,10 @@ import Gun from "gun";
 import { decryptStudentData, encryptStudentData } from "./LitProtocol";
 import "gun/sea";
 
+
 const gun = Gun({
   peers: [
-    process.env.NEXT_PUBLIC_GunDB_REPLIT_REPAY_URL,
+    process.env.NEXT_PUBLIC_GunDB_FLYIO_RELAYER_URL,
     "https://gun-manhattan.herokuapp.com/gun",
   ],
 });
@@ -15,6 +16,7 @@ export async function storeStudent(c) {
     process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
     process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
     async (ack) => {
+      console.log(ack);
       const studentData = {
         studentID: c?.studentID,
         name: c?.name,

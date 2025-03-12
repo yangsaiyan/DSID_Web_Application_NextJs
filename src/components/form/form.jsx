@@ -16,7 +16,7 @@ import { formPath, userData } from "../../../constants";
 import emailjs from "@emailjs/browser";
 import { add, isEmpty } from "lodash";
 import dynamic from "next/dynamic";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount, useSignMessage, useWriteContract } from "wagmi";
 import {
   decryptStudentData,
   encryptStudentData,
@@ -26,6 +26,7 @@ import {
 } from "hooks/LitProtocol";
 import { setStudent } from "../../../redux/actions/student_action";
 import { getStudent, storeStudent } from "hooks/GunDB";
+import { student_reg_abi } from "../../../abi";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
@@ -36,6 +37,7 @@ export default function form() {
 
   const formRef = useRef(null);
 
+  const { writeContract } = useWriteContract();
   const account = useAccount();
 
   const [formData, setFormData] = useState({
@@ -52,7 +54,7 @@ export default function form() {
     permanentHomeAddress: "",
     walletAddress: account?.address || "",
   });
-  const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
+  const [formDisplay, setFormDisplay] = useState([]);
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -177,6 +179,15 @@ export default function form() {
     }
   };
 
+  const handleWriteContract = async (formData) => {
+    writeContract({
+      student_reg_abi,
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+      funtionName: "registerStudent",
+      params: [formData.studentId],
+    });
+  };
+
   const submitForm = async (e) => {
     e.preventDefault();
 
@@ -201,6 +212,7 @@ export default function form() {
     } else if (pathname?.includes("register")) {
       dispatch(setStudent(formData));
       storeStudent(formData);
+      handleWriteContract(formData);
       // getStudent(account?.address);
     }
   };

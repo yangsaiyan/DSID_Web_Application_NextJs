@@ -12,7 +12,7 @@ const SearchBar = dynamic(() => import("@/components/SearchBar/SearchBar"), {
 });
 
 export default function Search() {
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [studentData, setStudentData] = useState({
     studentID: "",
     name: "",
