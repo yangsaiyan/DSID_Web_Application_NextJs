@@ -14,13 +14,13 @@ const SearchBar = dynamic(() => import("@/components/SearchBar/SearchBar"), {
 export default function Search() {
   const [showForm, setShowForm] = useState(false);
   const [studentData, setStudentData] = useState({
-    studentID: "",
+    studentId: "",
     name: "",
     email: "",
     phoneNumber: "",
     nric: "",
     walletAddress: "",
-    homeAddress: "",
+    permanentHomeAddress: "",
     faculty: "",
     course: "",
     race: "",
@@ -37,7 +37,7 @@ export default function Search() {
       alignItems={"center"}
     >
       {showForm ? (
-        <FormComponent />
+        <FormComponent studentData={studentData} />
       ) : (
         <Grid2
           sx={{

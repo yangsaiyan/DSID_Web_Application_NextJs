@@ -2,10 +2,9 @@ import Gun from "gun";
 import { decryptStudentData, encryptStudentData } from "./LitProtocol";
 import "gun/sea";
 
-
 const gun = Gun({
   peers: [
-    process.env.NEXT_PUBLIC_GunDB_FLYIO_RELAYER_URL,
+    process.env.NEXT_PUBLIC_GunDB_HEROKU_RELAYER_URL,
     "https://gun-manhattan.herokuapp.com/gun",
   ],
 });
@@ -18,13 +17,13 @@ export async function storeStudent(c) {
     async (ack) => {
       console.log(ack);
       const studentData = {
-        studentID: c?.studentID,
+        studentId: c?.studentId,
         name: c?.name,
         email: c?.email,
         phoneNumber: c?.phoneNumber,
         nric: c?.nric,
         walletAddress: c?.walletAddress,
-        homeAddress: c?.homeAddress,
+        permanentHomeAddress: c?.permanentHomeAddress,
         faculty: c?.faculty,
         course: c?.course,
         race: c?.race,
@@ -56,25 +55,37 @@ export async function storeStudent(c) {
 
 export async function getStudent(address) {
   const user = gun.user();
-  user.auth(
-    process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
-    process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
-    async (ack) => {
-      console.log(address);
-      user
-        .get("students")
-        .get(address)
-        .once((data) => {
-          const encryptedData = data;
-          decryptStudentData(
-            encryptedData?.ciphertext,
-            encryptedData?.dataToEncryptHash,
-            address
-          ).then((decryptedData) => {
-            console.log(decryptedData);
-            return decryptedData;
+
+  return new Promise((resolve, reject) => {
+    user.auth(
+      process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
+      process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
+      (ack) => {
+        if (ack.err) {
+          return reject(new Error(ack.err));
+        }
+
+        user
+          .get("students")
+          .get(address)
+          .once(async (data) => {
+            if (!data) {
+              return resolve(null);
+            }
+
+            try {
+              const decryptedData = await decryptStudentData(
+                data?.ciphertext,
+                data?.dataToEncryptHash,
+                address
+              );
+              console.log(decryptedData);
+              resolve(decryptedData);
+            } catch (decryptionError) {
+              reject(decryptionError);
+            }
           });
-        });
-    }
-  );
+      }
+    );
+  });
 }

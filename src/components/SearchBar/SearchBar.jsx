@@ -11,8 +11,9 @@ export default function SearchBar(props) {
     setSearchQuery(e?.target?.value);
   };
 
-  const onSubmit = () => {
-    const data = getStudent(searchQuery);
+  const onSubmit = async() => {
+    const data = await getStudent(searchQuery);
+    console.log("data", data);
     if (!data) {
       return;
     }

@@ -30,7 +30,9 @@ import { student_reg_abi } from "../../../abi";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
-export default function form() {
+export default function form(props) {
+  const { studentData } = props;
+
   const dispatch = useDispatch();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -69,13 +71,21 @@ export default function form() {
   }, [pathname]);
 
   useEffect(() => {
-    setFormData({
-      ...formData,
-      studentId: params?.get("studentId") || "",
-      email: params?.get("email") || "",
-      faculty: params?.get("faculty") || "",
-      course: params?.get("course") || "",
-    });
+    console.log("form sdata",studentData)
+    if (studentData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...studentData,
+      }));
+    } else {
+      setFormData({
+        ...formData,
+        studentId: params?.get("studentId") || "",
+        email: params?.get("email") || "",
+        faculty: params?.get("faculty") || "",
+        course: params?.get("course") || "",
+      });
+    }
   }, []);
 
   useEffect(() => {
