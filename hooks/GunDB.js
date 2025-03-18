@@ -1,5 +1,5 @@
 import Gun from "gun";
-import { decryptStudentData, encryptStudentData } from "./LitProtocol";
+import { decryptStudentData, decryptStudentDataCallback, encryptStudentData } from "./LitProtocol";
 import "gun/sea";
 
 const gun = Gun({
@@ -78,6 +78,44 @@ export async function getStudent(address) {
                 data?.ciphertext,
                 data?.dataToEncryptHash,
                 address
+              );
+              console.log(decryptedData);
+              resolve(decryptedData);
+            } catch (decryptionError) {
+              reject(decryptionError);
+            }
+          });
+      }
+    );
+  });
+}
+
+export async function getStudentCallback(address, authSig) {
+  const user = gun.user();
+
+  return new Promise((resolve, reject) => {
+    user.auth(
+      process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
+      process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
+      (ack) => {
+        if (ack.err) {
+          return reject(new Error(ack.err));
+        }
+
+        user
+          .get("students")
+          .get(address)
+          .once(async (data) => {
+            if (!data) {
+              return resolve(null);
+            }
+            console.log("🔍 Checking GunDB Data:", data);
+            try {
+              const decryptedData = await decryptStudentDataCallback(
+                data?.ciphertext,
+                data?.dataToEncryptHash,
+                address,
+                authSig,
               );
               console.log(decryptedData);
               resolve(decryptedData);
