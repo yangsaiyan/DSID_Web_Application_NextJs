@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getStudent } from "hooks/GunDB";
 
-export default function Profile() {
+export default function Profile({ params }) {
   const searchParams = useSearchParams();
-  const address = searchParams.get("address"); 
-  const callback = searchParams.get("callback"); 
-  
+  const address = params?.address;
+  const callback = searchParams.get("callback");
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("Address", address);
+    console.log("callback", callback);
     if (!address || !callback) return;
 
     async function fetchProfile() {
       try {
+        console.log("Getting data!");
         const data = await getStudent(address);
         setProfile(data);
 
@@ -29,6 +32,7 @@ export default function Profile() {
         console.error("Error fetching profile:", error);
       } finally {
         setLoading(false);
+        console.log("Completed!");
       }
     }
 
