@@ -12,11 +12,16 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
-import { formPath, userData } from "../../../constants";
+import { formPath, userData, student_reg_abi } from "../../../constants";
 import emailjs from "@emailjs/browser";
 import { add, isEmpty } from "lodash";
 import dynamic from "next/dynamic";
-import { useAccount, useSignMessage, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useSignMessage,
+  useWalletClient,
+  useWriteContract,
+} from "wagmi";
 import {
   decryptStudentData,
   encryptStudentData,
@@ -26,13 +31,16 @@ import {
 } from "hooks/LitProtocol";
 import { setStudent } from "../../../redux/actions/student_action";
 import { getStudent, storeStudent } from "hooks/GunDB";
-import { student_reg_abi } from "../../../abi";
+import { GelatoRelay } from "@gelatonetwork/relay-sdk";
+import { Contract, ethers } from "ethers";
+import { polygonAmoy } from "viem/chains";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
 export default function form(props) {
   const { studentData } = props;
 
+  const relay = new GelatoRelay();
   const dispatch = useDispatch();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -41,6 +49,8 @@ export default function form(props) {
 
   const { writeContract } = useWriteContract();
   const account = useAccount();
+  const { walletClient } = useWalletClient();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -71,7 +81,7 @@ export default function form(props) {
   }, [pathname]);
 
   useEffect(() => {
-    console.log("form sdata",studentData)
+    console.log("form sdata", studentData);
     if (studentData) {
       setFormData((prev) => ({
         ...prev,
@@ -190,12 +200,24 @@ export default function form(props) {
   };
 
   const handleWriteContract = async (formData) => {
-    writeContract({
-      student_reg_abi,
-      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
-      funtionName: "registerStudent",
-      params: [formData.studentId],
-    });
+    const signer = await provider.getSigner();
+    const contract = new Contract("0xaEdFefDb3b91F4dA3376FB1786C6Fcd97aecb6E7", student_reg_abi, signer);
+    const data = contract.interface.encodeFunctionData("registerStudent", [formData.studentId]);
+    const request = {
+      chainId: polygonAmoy.id,
+      target: "0xaEdFefDb3b91F4dA3376FB1786C6Fcd97aecb6E7",
+      data,
+      user: account.address,
+    };
+    console.log(data, request);
+
+    try {
+      const response = await relay.sponsoredCallERC2771(request, provider, "H2lyhgWimBRV2DESWKtCzAbNhxGygo8V0TzNbybbmtM_");
+      console.log("Gelato Relay TX Hash:", response.taskId);
+      alert("Gasless registration request sent!");
+    } catch (error) {
+      console.error("Gelato Relay Error:", error);
+    }
   };
 
   const submitForm = async (e) => {

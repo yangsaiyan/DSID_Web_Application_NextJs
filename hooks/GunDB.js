@@ -72,7 +72,7 @@ export async function getStudent(address) {
             if (!data) {
               return resolve(null);
             }
-
+            console.log("🔍 Checking GunDB Data:", data);
             try {
               const decryptedData = await decryptStudentData(
                 data?.ciphertext,
