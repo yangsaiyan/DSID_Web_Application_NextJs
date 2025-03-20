@@ -1,4 +1,4 @@
-import { TYPE_GET_STUDENT, TYPE_SET_STUDENT } from "../types/types";
+import  * as types  from "../types/types";
 
 const studentInitialState = {
   name: "",
@@ -17,9 +17,9 @@ const studentInitialState = {
 
 const studentReducer = (state = studentInitialState, action) => {
   switch (action.type) {
-    case TYPE_GET_STUDENT:
+    case types.TYPE_GET_STUDENT:
       return state;
-    case TYPE_SET_STUDENT:
+    case types.TYPE_SET_STUDENT:
       return {
         ...state,
         ...action.payload,

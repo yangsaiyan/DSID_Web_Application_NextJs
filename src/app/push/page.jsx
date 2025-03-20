@@ -1,12 +1,29 @@
 "use client";
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
 });
 
 export default function PushEmail() {
+
+  const [formData, setFormData] = useState({
+    name: "",
+    studentId: "",
+    nric: "",
+    email: "",
+    faculty: "",
+    course: "",
+    race: "",
+    gender: "",
+    nationality: "",
+    phoneNumber: "",
+    permanentHomeAddress: "",
+    walletAddress:  "",
+  });
+
   return (
     <Grid2
       sx={{
@@ -27,7 +44,7 @@ export default function PushEmail() {
           alignItems: "center",
         }}
       >
-        <FormComponent />
+        <FormComponent formData={formData} setFormData={setFormData} />
       </Grid2>
     </Grid2>
   );
