@@ -21,18 +21,6 @@ export default function page() {
   const account = useAccount();
   const studentData = useSelector((state) => state.student);
 
-  const generateImage = async () => {
-    html2canvas(document.getElementById("studentID"), {
-      backgroundColor: null,
-      scale: 2,
-    }).then((canvas) => {
-      const link = document.createElement("a");
-      link.download = "student-id.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  };
-
   return (
     <Grid2
       sx={{
@@ -53,7 +41,9 @@ export default function page() {
           alignItems: "center",
         }}
       >
-        <FormComponent generateImage={generateImage} account={account} />
+        <FormComponent
+          account={account}
+        />
         <StudenIDComponent
           address={account?.address}
           studentId={studentData?.studentId}

@@ -1,5 +1,5 @@
 "use client";
-import { Grid2, InputLabel, MenuItem, Select } from "@mui/material";
+import { Grid2, InputLabel, MenuItem } from "@mui/material";
 import {
   ConnectWalletButton,
   CTAButton,
@@ -12,37 +12,30 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
-import { formPath, userData, student_reg_abi } from "../../../constants";
+import {
+  formPath,
+  userData,
+  student_reg_abi,
+  student_nft_abi,
+} from "../../../constants";
 import emailjs from "@emailjs/browser";
 import { add, isEmpty } from "lodash";
 import dynamic from "next/dynamic";
 import {
   useAccount,
   useSignMessage,
-  useWalletClient,
-  useWriteContract,
 } from "wagmi";
-import {
-  decryptStudentData,
-  encryptStudentData,
-  getSessionSignatures,
-  sessionSigs,
-  useCreateSignatureRequest,
-} from "hooks/LitProtocol";
 import { setStudent } from "../../../redux/actions/student_action";
-import { getStudent, storeStudent, storeStudentImmutable } from "hooks/GunDB";
+import { storeStudent } from "hooks/GunDB";
 import { GelatoRelay } from "@gelatonetwork/relay-sdk";
 import { Contract, ethers } from "ethers";
 import { polygonAmoy } from "viem/chains";
-import {
-  signMessageAndDecrypt,
-  signMessageAndEncrypt,
-} from "hooks/SignEncryptDecrypt";
+import { getURI } from "utils/NFT_Utils/nft_utils";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
 export default function form(props) {
-  const { account, generateImage } = props;
+  const { account } = props;
 
   const studentInfo = useSelector((state) => state.student);
 
@@ -74,6 +67,25 @@ export default function form(props) {
   const [formDisplay, setFormDisplay] = useState([]);
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
+  const [tokenId, setTokenId] = useState("");
+  const [tokenURI, setTokenURI] = useState("");
+  // const CONTRACT_ADDRESS = "0x0AaE0472decB349e0649AF336E4804D9f8401bC7";
+
+  // const { data: fetchedTokenId } = useContractRead({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: student_nft_abi,
+  //   functionName: "getTokenIdOfStudent",
+  //   args: [account?.address],
+  //   enabled: account?.isConnected,
+  // });
+
+  // const { data: fetchedTokenURI } = useContractRead({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: student_nft_abi,
+  //   functionName: "getTokenURI",
+  //   args: [fetchedTokenId],
+  //   enabled: !!fetchedTokenId && fetchedTokenId > 0,
+  // });
 
   useEffect(() => {
     if (pathname?.includes("register")) {
@@ -201,35 +213,93 @@ export default function form(props) {
     }
   };
 
-  const handleWriteContract = async (formData) => {
+  const handleWriteContractRegister = async (formData) => {
     const signer = await provider.getSigner();
-    const contract = new Contract(
-      "0xaEdFefDb3b91F4dA3376FB1786C6Fcd97aecb6E7",
+
+    const studentRegistryContract = new Contract(
+      process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
       student_reg_abi,
       signer
     );
-    const data = contract.interface.encodeFunctionData("registerStudent", [
-      formData.studentId,
-    ]);
-    const request = {
+
+    const registerData = studentRegistryContract.interface.encodeFunctionData(
+      "registerStudent",
+      [formData.studentId]
+    );
+
+    const registerRequest = {
       chainId: polygonAmoy.id,
-      target: "0xaEdFefDb3b91F4dA3376FB1786C6Fcd97aecb6E7",
-      data,
+      target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      data: registerData,
       user: account.address,
     };
-    console.log(data, request);
+
+    console.log("Register Request:", registerRequest);
 
     try {
-      const response = await relay.sponsoredCallERC2771(
-        request,
+      const registerResponse = await relay.sponsoredCallERC2771(
+        registerRequest,
         provider,
-        "H2lyhgWimBRV2DESWKtCzAbNhxGygo8V0TzNbybbmtM_"
+        process.env.NEXT_PUBLIC_GELATO_API_1
       );
-      console.log("Gelato Relay TX Hash:", response.taskId);
+      console.log("Gelato Relay TX Hash (Register):", registerResponse);
       alert("Gasless registration request sent!");
     } catch (error) {
-      console.error("Gelato Relay Error:", error);
+      console.error("Gelato Relay Error (Register):", error);
     }
+  };
+
+  const handleWriteContractNFT = async (uri) => {
+    const signer = await provider.getSigner();
+
+    const studentRegistryContract = new Contract(
+      process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      student_reg_abi,
+      provider
+    );
+
+    console.log("Listening for StudentRegistered event...");
+
+    studentRegistryContract.once(
+      "StudentRegistered",
+      async (student, studentId) => {
+        console.log("StudentRegistered event detected:", student, studentId);
+
+        const studentNFTContract = new Contract(
+          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+          student_nft_abi,
+          signer
+        );
+
+        const mintData = studentNFTContract.interface.encodeFunctionData(
+          "mint",
+          [uri]
+        );
+        console.log(uri);
+        const mintRequest = {
+          chainId: polygonAmoy.id,
+          target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+          data: mintData,
+          user: account.address,
+        };
+
+        console.log("Mint Request:", mintRequest);
+
+        try {
+          const mintResponse = await relay.sponsoredCallERC2771(
+            mintRequest,
+            provider,
+            process.env.NEXT_PUBLIC_GELATO_API_2
+          );
+          console.log("Gelato Relay TX Hash (Mint):", mintResponse);
+          alert("Gasless NFT minting request sent!");
+          setLoading(false);
+        } catch (error) {
+          console.error("Gelato Relay Error (Mint):", error);
+          setLoading(false);
+        }
+      }
+    );
   };
 
   const submitForm = async (e) => {
@@ -255,11 +325,11 @@ export default function form(props) {
         );
     } else if (pathname?.includes("register")) {
       dispatch(setStudent(formData));
+      setLoading(true);
       storeStudent(formData);
-      handleWriteContract(formData);
-      // const signedMessage = await signMessageAsync({ message: "" });
-      // storeStudentImmutable(formData, signedMessage);
-      generateImage();
+      handleWriteContractRegister(formData);
+      const uri = await getURI(formData?.studentId);
+      handleWriteContractNFT(uri);
     }
   };
 
