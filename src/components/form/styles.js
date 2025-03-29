@@ -1,4 +1,4 @@
-import { Box, Button, Grid2, TextField } from "@mui/material";
+import { Box, Button, Grid2, Select, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const StyledBox = styled(Box)(({ path }) => ({
@@ -69,6 +69,10 @@ export const StyledTextField = styled(TextField)(() => ({
     transitionProperty: "background-color, color",
   },
 }));
+
+export const StyledSelect = styled(Select)({
+  width: "100%",
+});
 
 export const CTAButtonContainer = styled(Grid2)({
   display: "flex",

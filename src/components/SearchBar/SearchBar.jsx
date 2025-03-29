@@ -2,24 +2,28 @@
 import { Button, Grid2, TextField } from "@mui/material";
 import { getStudent } from "hooks/GunDB";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setStudent } from "../../../redux/actions/student_action";
 
 export default function SearchBar(props) {
-  const { showForm, setShowForm, studentData, setStudentData } = props;
+  const { showForm, setShowForm } = props;
+
+  const dispatch = useDispatch();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const onChange = (e) => {
     setSearchQuery(e?.target?.value);
   };
 
-  const onSubmit = () => {
-    const data = getStudent(searchQuery);
+  const onSubmit = async() => {
+    const data = await getStudent(searchQuery);
+    console.log("data", data);
     if (!data) {
       return;
     }
-    setStudentData((prev) => ({
-      ...prev,
-      ...data,
-    }));
+    
+    dispatch(setStudent(data));
     setShowForm(true);
   };
 

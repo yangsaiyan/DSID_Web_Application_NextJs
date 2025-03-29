@@ -1,67 +1,98 @@
 "use client";
-import { Grid2 } from "@mui/material";
+import { Grid2, InputLabel, MenuItem } from "@mui/material";
 import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
   StyledBox,
+  StyledSelect,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { usePathname, useSearchParams } from "next/navigation";
-import { formPath, userData } from "../../../constants";
+import {
+  formPath,
+  userData,
+  student_reg_abi,
+  student_nft_abi,
+} from "../../../constants";
 import emailjs from "@emailjs/browser";
 import { add, isEmpty } from "lodash";
 import dynamic from "next/dynamic";
-import { useAccount, useSignMessage } from "wagmi";
 import {
-  decryptStudentData,
-  encryptStudentData,
-  getSessionSignatures,
-  sessionSigs,
-  useCreateSignatureRequest,
-} from "hooks/LitProtocol";
+  useAccount,
+  useSignMessage,
+} from "wagmi";
 import { setStudent } from "../../../redux/actions/student_action";
-import { getStudent, storeStudent } from "hooks/GunDB";
+import { storeStudent } from "hooks/GunDB";
+import { GelatoRelay } from "@gelatonetwork/relay-sdk";
+import { Contract, ethers } from "ethers";
+import { polygonAmoy } from "viem/chains";
+import { getURI } from "utils/NFT_Utils/nft_utils";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
-export default function form() {
+export default function form(props) {
+  const { account } = props;
+
+  const studentInfo = useSelector((state) => state.student);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    studentId: "",
+    nric: "",
+    email: "",
+    faculty: "",
+    course: "",
+    race: "",
+    gender: "",
+    nationality: "",
+    phoneNumber: "",
+    permanentHomeAddress: "",
+    walletAddress: account?.address || "",
+  });
+
+  const { signMessageAsync } = useSignMessage();
+  const relay = new GelatoRelay();
   const dispatch = useDispatch();
   const pathname = usePathname();
   const params = useSearchParams();
 
   const formRef = useRef(null);
 
-  const account = useAccount();
-  const { signMessageAsync } = useSignMessage();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-  const [formData, setFormData] = useState({
-    name: "Lim",
-    studentId: "1112",
-    nric: "1",
-    email: "1",
-    faculty: "1",
-    course: "1",
-    race: "1",
-    gender: "1",
-    nationality: "1",
-    phoneNumber: "11112",
-    permanentHomeAddress: "1",
-    walletAddress: account?.address || "",
-  });
-  const [formDisplay, setFormDisplay] = useState([]); // set to empty when submitted
+  const [formDisplay, setFormDisplay] = useState([]);
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
+  const [tokenId, setTokenId] = useState("");
+  const [tokenURI, setTokenURI] = useState("");
+  // const CONTRACT_ADDRESS = "0x0AaE0472decB349e0649AF336E4804D9f8401bC7";
+
+  // const { data: fetchedTokenId } = useContractRead({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: student_nft_abi,
+  //   functionName: "getTokenIdOfStudent",
+  //   args: [account?.address],
+  //   enabled: account?.isConnected,
+  // });
+
+  // const { data: fetchedTokenURI } = useContractRead({
+  //   address: CONTRACT_ADDRESS,
+  //   abi: student_nft_abi,
+  //   functionName: "getTokenURI",
+  //   args: [fetchedTokenId],
+  //   enabled: !!fetchedTokenId && fetchedTokenId > 0,
+  // });
 
   useEffect(() => {
     if (pathname?.includes("register")) {
       setFormDisplay(formPath?.register);
     } else if (pathname?.includes("push")) {
       setFormDisplay(formPath?.pushEmail);
-    } else if (pathname?.includes("search")){
+    } else if (pathname?.includes("search")) {
       setFormDisplay(formPath?.search);
     }
   }, [pathname]);
@@ -69,9 +100,21 @@ export default function form() {
   useEffect(() => {
     setFormData({
       ...formData,
-      studentId: params?.get("studentId"),
+      studentId: params?.get("studentId") || "",
+      email: params?.get("email") || "",
+      faculty: params?.get("faculty") || "",
+      course: params?.get("course") || "",
     });
   }, []);
+
+  useEffect(() => {
+    if (pathname?.includes("search")) {
+      setFormData((prev) => ({
+        ...prev,
+        ...studentInfo,
+      }));
+    }
+  }, [studentInfo]);
 
   useEffect(() => {
     filterFormInput(formDisplay);
@@ -170,6 +213,95 @@ export default function form() {
     }
   };
 
+  const handleWriteContractRegister = async (formData) => {
+    const signer = await provider.getSigner();
+
+    const studentRegistryContract = new Contract(
+      process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      student_reg_abi,
+      signer
+    );
+
+    const registerData = studentRegistryContract.interface.encodeFunctionData(
+      "registerStudent",
+      [formData.studentId]
+    );
+
+    const registerRequest = {
+      chainId: polygonAmoy.id,
+      target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      data: registerData,
+      user: account.address,
+    };
+
+    console.log("Register Request:", registerRequest);
+
+    try {
+      const registerResponse = await relay.sponsoredCallERC2771(
+        registerRequest,
+        provider,
+        process.env.NEXT_PUBLIC_GELATO_API_1
+      );
+      console.log("Gelato Relay TX Hash (Register):", registerResponse);
+      alert("Gasless registration request sent!");
+    } catch (error) {
+      console.error("Gelato Relay Error (Register):", error);
+    }
+  };
+
+  const handleWriteContractNFT = async (uri) => {
+    const signer = await provider.getSigner();
+
+    const studentRegistryContract = new Contract(
+      process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      student_reg_abi,
+      provider
+    );
+
+    console.log("Listening for StudentRegistered event...");
+
+    studentRegistryContract.once(
+      "StudentRegistered",
+      async (student, studentId) => {
+        console.log("StudentRegistered event detected:", student, studentId);
+
+        const studentNFTContract = new Contract(
+          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+          student_nft_abi,
+          signer
+        );
+
+        const mintData = studentNFTContract.interface.encodeFunctionData(
+          "mint",
+          [uri]
+        );
+        console.log(uri);
+        const mintRequest = {
+          chainId: polygonAmoy.id,
+          target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+          data: mintData,
+          user: account.address,
+        };
+
+        console.log("Mint Request:", mintRequest);
+
+        try {
+          const mintResponse = await relay.sponsoredCallERC2771(
+            mintRequest,
+            provider,
+            process.env.NEXT_PUBLIC_GELATO_API_2
+          );
+          console.log("Gelato Relay TX Hash (Mint):", mintResponse);
+          alert("Gasless NFT minting request sent!");
+          setLoading(false);
+        } catch (error) {
+          console.error("Gelato Relay Error (Mint):", error);
+          setLoading(false);
+        }
+      }
+    );
+  };
+
   const submitForm = async (e) => {
     e.preventDefault();
 
@@ -192,24 +324,12 @@ export default function form() {
           }
         );
     } else if (pathname?.includes("register")) {
-      dispatch(
-        setStudent({
-          name: "1",
-          studentId: "1",
-          nric: "1",
-          email: "1",
-          faculty: "1",
-          course: "1",
-          race: "1",
-          gender: "1",
-          nationality: "1",
-          phoneNumber: "1",
-          permanentHomeAddress: "1",
-          walletAddress: account?.address,
-        })
-      );
+      dispatch(setStudent(formData));
+      setLoading(true);
       storeStudent(formData);
-      // getStudent(account?.address);
+      handleWriteContractRegister(formData);
+      const uri = await getURI(formData?.studentId);
+      handleWriteContractNFT(uri);
     }
   };
 
@@ -225,18 +345,23 @@ export default function form() {
       path={pathname}
     >
       <TextFieldContainer
-        sx={{ paddingTop: pathname?.includes("register") ? "486px" : pathname?.includes("search") && "386px" }}
+        sx={{
+          paddingTop: pathname?.includes("register")
+            ? "486px"
+            : pathname?.includes("search") && "386px",
+        }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
             <>
-              {key !== "walletAddress" && key !== "token" && (
+              {key !== "walletAddress" && key !== "gender" && (
                 <StyledTextField
                   label={value}
                   name={key}
                   value={!isEmpty(formData[key]) ? formData[key] : ""}
                   disabled={
                     !isEmpty(formData[key]) &&
+                    !pathname.includes("push") &&
                     (key == "studentId" ||
                       key == "email" ||
                       key == "faculty" ||
@@ -244,6 +369,19 @@ export default function form() {
                   }
                   onChange={onChange}
                 />
+              )}
+              {key === "gender" && (
+                <Grid2 width={"100%"}>
+                  <InputLabel>Gender</InputLabel>
+                  <StyledSelect
+                    value={formData[key]}
+                    onChange={onChange}
+                    name={key}
+                  >
+                    <MenuItem value={"male"}>Male</MenuItem>
+                    <MenuItem value={"female"}>Female</MenuItem>
+                  </StyledSelect>
+                </Grid2>
               )}
               {key === "walletAddress" && (
                 <Grid2

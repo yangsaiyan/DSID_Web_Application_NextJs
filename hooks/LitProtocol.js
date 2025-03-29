@@ -21,7 +21,7 @@ const accessControlConditions = (studentWallet) => [
   {
     contractAddress: "",
     standardContractType: "",
-    chain: "ethereum",
+    chain: "amoy",
     method: "",
     parameters: [":userAddress"],
     returnValueTest: {
@@ -35,7 +35,7 @@ const accessControlConditions = (studentWallet) => [
   {
     contractAddress: "",
     standardContractType: "",
-    chain: "ethereum",
+    chain: "amoy",
     method: "",
     parameters: [":userAddress"],
     returnValueTest: {
@@ -82,10 +82,12 @@ export async function decryptStudentData(
   }
   try {
     const authSig = await checkAndSignAuthMessage({
-      chain: "ethereum",
-      wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+      chain: "amoy",
+      // wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
     });
     const accConditions = accessControlConditions(address);
+
+    console.log(authSig)
 
     if (!ciphertext) {
       console.error("Error: Encrypted string is undefined or empty");
@@ -110,7 +112,54 @@ export async function decryptStudentData(
     const decryptedData = await decryptToString(
       {
         accessControlConditions: accessControlConditions(address),
-        chain: "ethereum",
+        chain: "amoy",
+        ciphertext,
+        dataToEncryptHash,
+        authSig,
+      },
+      litNodeClient
+    );
+    console.log("plaintext",decryptedData)
+    return JSON.parse(decryptedData);
+  } catch (error) {
+    console.error("Decryption failed:", error);
+    return null;
+  }
+}
+
+export async function decryptStudentDataCallback(
+  ciphertext,
+  dataToEncryptHash,
+  address,
+  authSig
+) {
+  if (!litNodeClient.connected) {
+    await litNodeClient.connect();
+  }
+  try {
+    const accConditions = accessControlConditions(address);
+
+    console.log(authSig)
+
+    if (!ciphertext) {
+      console.error("Error: Encrypted string is undefined or empty");
+      return;
+    }
+
+    if (!accessControlConditions || accessControlConditions.length === 0) {
+      console.error("Error: Access Control Conditions are missing");
+      return;
+    }
+
+    if (!dataToEncryptHash) {
+      console.error("Error: Data hash is missing");
+      return;
+    }
+
+    const decryptedData = await decryptToString(
+      {
+        accessControlConditions: accessControlConditions(address),
+        chain: "amoy",
         ciphertext,
         dataToEncryptHash,
         authSig,
