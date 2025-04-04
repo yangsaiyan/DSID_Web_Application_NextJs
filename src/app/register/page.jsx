@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/components/loading/loading";
 import { Grid2 } from "@mui/material";
 import html2canvas from "html2canvas";
 import dynamic from "next/dynamic";
@@ -8,12 +9,14 @@ import { useAccount } from "wagmi";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 const StudenIDComponent = dynamic(
   () => import("../../components/studentId/studentId"),
   {
     ssr: false,
+    loading: () => <Loading />,
   }
 );
 

@@ -1,8 +1,22 @@
 "use client";
+import { useEffect, useState } from "react";
 import "./globals.css";
 import { Providers } from "./Providers";
+import dynamic from "next/dynamic";
+
+const Loading = dynamic(() => import("../components/loading/loading"), {
+  ssr: false,
+});
 
 export default function RootLayout({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/assets/images/indexBackground.jpg";
+    img.onload = () => setIsLoading(false);
+  }, []);
+
   return (
     <html
       lang="en"
@@ -21,7 +35,7 @@ export default function RootLayout({ children }) {
           backgroundPosition: "center",
         }}
       >
-        <Providers>{children}</Providers>
+        {isLoading ? <Loading /> : <Providers>{children}</Providers>}
       </body>
     </html>
   );

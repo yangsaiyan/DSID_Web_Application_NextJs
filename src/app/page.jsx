@@ -12,6 +12,7 @@ export default function page() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     import("../../public/assets/lotties/blockchain.json")
       .then((data) => {
         setAnimationData(data.default || data);
