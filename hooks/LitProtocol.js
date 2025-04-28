@@ -85,7 +85,7 @@ export async function decryptStudentData(
   try {
     const authSig = await checkAndSignAuthMessage({
       chain: "amoy",
-      // wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+      wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
     });
     const accConditions = accessControlConditions(address);
 

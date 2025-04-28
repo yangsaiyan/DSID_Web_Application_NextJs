@@ -1,7 +1,6 @@
 import Gun from "gun";
 import {
   decryptStudentData,
-  decryptStudentDataCallback,
   encryptStudentData,
 } from "./LitProtocol";
 import "gun/sea";
@@ -9,6 +8,7 @@ import "gun/sea";
 const gun = Gun({
   peers: [
     process.env.NEXT_PUBLIC_GunDB_HEROKU_RELAYER_URL,
+    "https://gun-manhattan.herokuapp.com/gun",
   ],
 });
 
