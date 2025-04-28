@@ -110,21 +110,33 @@ export async function storeStudent(c) {
 
 export async function getStudent(address) {
   const user = gun.user();
+  const email = process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL;
+  const password = process.env.NEXT_PUBLIC_GunDB_AUTH_PASS;
 
   return new Promise((resolve, reject) => {
-    user.auth(
-      process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
-      process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
-      (ack) => {
-        if (ack.err) {
-          return reject(new Error(ack.err));
-        }
+    user.auth(email, password, (ack) => {
+      if (ack.err) {
+        console.warn("Auth failed, trying to create account...");
+        user.create(email, password, (createAck) => {
+          if (createAck.err) {
+            console.error("Create account failed:", createAck.err);
+            return reject(new Error(createAck.err));
+          }
+          console.log("Account created successfully.");
+          proceedToGetStudent();
+        });
+      } else {
+        console.log("Logged in successfully.");
+        proceedToGetStudent();
+      }
 
+      function proceedToGetStudent() {
         user
           .get("students")
           .get(address)
           .once(async (data) => {
             if (!data) {
+              console.warn("No student data found for address:", address);
               return resolve(null);
             }
             console.log("🔍 Checking GunDB Data:", data);
@@ -134,13 +146,15 @@ export async function getStudent(address) {
                 data?.dataToEncryptHash,
                 address
               );
-              console.log(decryptedData);
+              console.log("✅ Decrypted Student Data:", decryptedData);
               resolve(decryptedData);
             } catch (decryptionError) {
+              console.error("❌ Decryption error:", decryptionError);
               reject(decryptionError);
             }
           });
       }
-    );
+    });
   });
 }
+
