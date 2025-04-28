@@ -19,7 +19,10 @@ export async function storeStudent(c) {
     process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
     process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
     async (ack) => {
-      console.log(ack);
+
+      if (ack.err) {
+        user.create(email, password, (createAck) => {});
+      }
       const studentData = {
         studentId: c?.studentId,
         name: c?.name,
