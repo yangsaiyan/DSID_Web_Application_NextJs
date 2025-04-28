@@ -109,52 +109,32 @@ export async function storeStudent(c) {
 // }
 
 export async function getStudent(address) {
-  const user = gun.user();
-  const email = process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL;
-  const password = process.env.NEXT_PUBLIC_GunDB_AUTH_PASS;
-
   return new Promise((resolve, reject) => {
-    user.auth(email, password, (ack) => {
-      if (ack.err) {
-        console.warn("Auth failed, trying to create account...");
-        user.create(email, password, (createAck) => {
-          if (createAck.err) {
-            console.error("Create account failed:", createAck.err);
-            return reject(new Error(createAck.err));
-          }
-          console.log("Account created successfully.");
-          proceedToGetStudent();
-        });
-      } else {
-        console.log("Logged in successfully.");
-        proceedToGetStudent();
-      }
+    // Fetch the student data directly from the public GunDB node.
+    gun
+      .get("students")
+      .get(address)
+      .once(async (data) => {
+        if (!data) {
+          console.warn("No student data found for address:", address);
+          return resolve(null); // No data found, return null.
+        }
 
-      function proceedToGetStudent() {
-        user
-          .get("students")
-          .get(address)
-          .once(async (data) => {
-            if (!data) {
-              console.warn("No student data found for address:", address);
-              return resolve(null);
-            }
-            console.log("🔍 Checking GunDB Data:", data);
-            try {
-              const decryptedData = await decryptStudentData(
-                data?.ciphertext,
-                data?.dataToEncryptHash,
-                address
-              );
-              console.log("✅ Decrypted Student Data:", decryptedData);
-              resolve(decryptedData);
-            } catch (decryptionError) {
-              console.error("❌ Decryption error:", decryptionError);
-              reject(decryptionError);
-            }
-          });
-      }
-    });
+        console.log("🔍 Checking GunDB Data:", data);
+
+        try {
+          // Decrypt the encrypted student data.
+          const decryptedData = await decryptStudentData(
+            data?.ciphertext,
+            data?.dataToEncryptHash,
+            address
+          );
+          console.log("✅ Decrypted Student Data:", decryptedData);
+          resolve(decryptedData); // Return decrypted student data.
+        } catch (decryptionError) {
+          console.error("❌ Decryption error:", decryptionError);
+          reject(decryptionError); // Handle decryption errors.
+        }
+      });
   });
 }
-
