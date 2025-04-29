@@ -5,8 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setStudent } from "../../../redux/actions/student_action";
 
-export default function SearchBar(props) {
-  const { showForm, setShowForm } = props;
+export default function SearchBar() {
 
   const dispatch = useDispatch();
 
@@ -24,7 +23,6 @@ export default function SearchBar(props) {
     }
 
     dispatch(setStudent(data));
-    setShowForm(true);
   };
 
   return (

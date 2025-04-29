@@ -49,10 +49,8 @@ export default function page() {
           <Lottie
             animationData={animationData}
             style={{
-              width: "100%",
-              height: "100%",
-              maxWidth: "100%",
-              maxHeight: "70%",
+              width: "calc(100vh/2)",
+              height: "calc(100vh/2)",
             }}
           />
           <Typography

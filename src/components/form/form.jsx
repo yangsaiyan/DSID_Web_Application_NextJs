@@ -1,11 +1,12 @@
 "use client";
-import { Grid2, InputLabel, MenuItem } from "@mui/material";
+import { Grid2, IconButton, InputLabel, MenuItem } from "@mui/material";
 import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
   StyledBox,
   StyledSelect,
+  StyledSnackbar,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -19,18 +20,16 @@ import {
   student_nft_abi,
 } from "../../../constants";
 import emailjs from "@emailjs/browser";
-import { add, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import dynamic from "next/dynamic";
-import {
-  useAccount,
-  useSignMessage,
-} from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import { setStudent } from "../../../redux/actions/student_action";
 import { storeStudent } from "hooks/GunDB";
 import { GelatoRelay } from "@gelatonetwork/relay-sdk";
 import { Contract, ethers } from "ethers";
 import { polygonAmoy } from "viem/chains";
 import { getURI } from "utils/NFT_Utils/nft_utils";
+import XMarkIcon from "@heroicons/react/24/solid/XMarkIcon";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
@@ -39,6 +38,9 @@ export default function form(props) {
 
   const studentInfo = useSelector((state) => state.student);
 
+  const [open, setSnackbarOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackStatus, setSnackStatus] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     studentId: "",
@@ -53,6 +55,20 @@ export default function form(props) {
     permanentHomeAddress: "",
     walletAddress: account?.address || "",
   });
+  const formDefaultState = {
+    name: "",
+    studentId: "",
+    nric: "",
+    email: "",
+    faculty: "",
+    course: "",
+    race: "",
+    gender: "",
+    nationality: "",
+    phoneNumber: "",
+    permanentHomeAddress: "",
+    walletAddress: account?.address || "",
+  };
 
   const { signMessageAsync } = useSignMessage();
   const relay = new GelatoRelay();
@@ -67,25 +83,6 @@ export default function form(props) {
   const [formDisplay, setFormDisplay] = useState([]);
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
-  const [tokenId, setTokenId] = useState("");
-  const [tokenURI, setTokenURI] = useState("");
-  // const CONTRACT_ADDRESS = "0x0AaE0472decB349e0649AF336E4804D9f8401bC7";
-
-  // const { data: fetchedTokenId } = useContractRead({
-  //   address: CONTRACT_ADDRESS,
-  //   abi: student_nft_abi,
-  //   functionName: "getTokenIdOfStudent",
-  //   args: [account?.address],
-  //   enabled: account?.isConnected,
-  // });
-
-  // const { data: fetchedTokenURI } = useContractRead({
-  //   address: CONTRACT_ADDRESS,
-  //   abi: student_nft_abi,
-  //   functionName: "getTokenURI",
-  //   args: [fetchedTokenId],
-  //   enabled: !!fetchedTokenId && fetchedTokenId > 0,
-  // });
 
   useEffect(() => {
     if (pathname?.includes("register")) {
@@ -108,7 +105,7 @@ export default function form(props) {
   }, []);
 
   useEffect(() => {
-    if (pathname?.includes("search")) {
+    if (pathname?.includes("search") && studentInfo?.walletAddress != "") {
       setFormData((prev) => ({
         ...prev,
         ...studentInfo,
@@ -229,12 +226,11 @@ export default function form(props) {
 
     const registerRequest = {
       chainId: polygonAmoy.id,
-      target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      target:
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
       data: registerData,
       user: account.address,
     };
-
-    console.log("Register Request:", registerRequest);
 
     try {
       const registerResponse = await relay.sponsoredCallERC2771(
@@ -242,10 +238,10 @@ export default function form(props) {
         provider,
         process.env.NEXT_PUBLIC_GELATO_API_1
       );
-      console.log("Gelato Relay TX Hash (Register):", registerResponse);
-      alert("Gasless registration request sent!");
     } catch (error) {
-      console.error("Gelato Relay Error (Register):", error);
+      return false
+    } finally {
+      return true;
     }
   };
 
@@ -258,12 +254,9 @@ export default function form(props) {
       provider
     );
 
-    console.log("Listening for StudentRegistered event...");
-
     studentRegistryContract.once(
       "StudentRegistered",
       async (student, studentId) => {
-        console.log("StudentRegistered event detected:", student, studentId);
 
         const studentNFTContract = new Contract(
           process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
@@ -275,7 +268,6 @@ export default function form(props) {
           "mint",
           [uri]
         );
-        console.log(uri);
         const mintRequest = {
           chainId: polygonAmoy.id,
           target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
@@ -283,23 +275,22 @@ export default function form(props) {
           user: account.address,
         };
 
-        console.log("Mint Request:", mintRequest);
-
         try {
           const mintResponse = await relay.sponsoredCallERC2771(
             mintRequest,
             provider,
             process.env.NEXT_PUBLIC_GELATO_API_2
           );
-          console.log("Gelato Relay TX Hash (Mint):", mintResponse);
-          alert("Gasless NFT minting request sent!");
           setLoading(false);
         } catch (error) {
-          console.error("Gelato Relay Error (Mint):", error);
           setLoading(false);
+          return false;
+        } finally {
+          return true;
         }
       }
     );
+    return false;
   };
 
   const submitForm = async (e) => {
@@ -317,23 +308,68 @@ export default function form(props) {
         )
         .then(
           () => {
-            console.log("SUCCESS!"); //add toast later
+            handleSnackbarOpen("Success!", true);
+            setFormData(formDefaultState);
           },
           (error) => {
-            console.log("FAILED...", error.text); //add toast later
+            handleSnackbarOpen(`Error, ${error.text}`, false);
           }
         );
     } else if (pathname?.includes("register")) {
       dispatch(setStudent(formData));
       setLoading(true);
-      storeStudent(formData);
-      handleWriteContractRegister(formData);
-      const uri = await getURI(formData?.studentId);
-      handleWriteContractNFT(uri);
+      const storeStudentRes = storeStudent(formData);
+
+      if(storeStudentRes){
+        handleSnackbarOpen("Student Stored!", true);
+      } else {
+        handleSnackbarOpen("Failed to store student!", false);
+      }
+
+      const registerRes = handleWriteContractRegister(formData);
+
+      if(registerRes) {
+        handleSnackbarOpen("Registration Completed!", true);
+      } else {
+        handleSnackbarOpen("Registration Failed!", false);
+      }
+
+      const mintNftRes = handleWriteContractNFT(await getURI(formData?.studentId));
+
+      if(mintNftRes){
+        handleSnackbarOpen("Student NFT minted!", true);
+      } else {
+        handleSnackbarOpen("Failed to mint student NFT!", false);
+      }
     }
   };
 
   const formInputErrorValidation = async () => {};
+
+  const handleSnackbarOpen = (message, status) => {
+    setSnackbarOpen(true);
+    setSnackMessage(message);
+    setSnackStatus(status);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
+
+  const action = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={handleSnackbarClose}
+    >
+      <XMarkIcon style={{ width: 20, height: 20, color: "#000000" }} />
+    </IconButton>
+  );
 
   return loading ? (
     <Loading />
@@ -344,6 +380,15 @@ export default function form(props) {
       onSubmit={submitForm}
       path={pathname}
     >
+      <StyledSnackbar
+        status={snackStatus}
+        open={open}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={snackMessage}
+        action={action}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
       <TextFieldContainer
         sx={{
           paddingTop: pathname?.includes("register")

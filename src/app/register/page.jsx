@@ -1,9 +1,7 @@
 "use client";
 import Loading from "@/components/loading/loading";
 import { Grid2 } from "@mui/material";
-import html2canvas from "html2canvas";
 import dynamic from "next/dynamic";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useAccount } from "wagmi";
 

@@ -73,40 +73,6 @@ export async function storeStudent(c) {
   });
 }
 
-
-// export async function storeStudentImmutable(c, signedMessage) {
-//   const user = gun.user();
-//   user.auth(
-//     process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL,
-//     process.env.NEXT_PUBLIC_GunDB_AUTH_PASS,
-//     async (ack) => {
-//       const studentData = {
-//         studentId: c?.studentId,
-//         name: c?.name,
-//         nric: c?.nric,
-//         gender: c?.gender,
-//         race: c?.race,
-//       };
-
-//       const encryptedData = await signMessageAndEncrypt(
-//         signedMessage,
-//         JSON.stringify(studentData)
-//       );
-
-//       user
-//         .get("studentsImmutable")
-//         .get(c?.walletAddress)
-//         .put(encryptedData, (ack) => {
-//           if (ack.ok) {
-//             return true;
-//           } else if (ack.err) {
-//             return false;
-//           }
-//         });
-//     }
-//   );
-// }
-
 export async function getStudent(address) {
   const user = gun.user();
   const email = process.env.NEXT_PUBLIC_GunDB_AUTH_EMAIL;
