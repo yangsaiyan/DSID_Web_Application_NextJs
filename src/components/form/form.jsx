@@ -118,6 +118,10 @@ export default function form(props) {
     setLoading(false);
   }, [formDisplay]);
 
+  useEffect(() => {
+    dispatch(setStudent(formData));
+  }, [formData]);
+
   const filterFormInput = (formDisplay) => {
     for (const [key, value] of Object.entries(userData)) {
       formDisplay?.forEach((item) => {
@@ -239,7 +243,7 @@ export default function form(props) {
         process.env.NEXT_PUBLIC_GELATO_API_1
       );
     } catch (error) {
-      return false
+      return false;
     } finally {
       return true;
     }
@@ -257,7 +261,6 @@ export default function form(props) {
     studentRegistryContract.once(
       "StudentRegistered",
       async (student, studentId) => {
-
         const studentNFTContract = new Contract(
           process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
           student_nft_abi,
@@ -316,11 +319,10 @@ export default function form(props) {
           }
         );
     } else if (pathname?.includes("register")) {
-      dispatch(setStudent(formData));
       setLoading(true);
       const storeStudentRes = storeStudent(formData);
 
-      if(storeStudentRes){
+      if (storeStudentRes) {
         handleSnackbarOpen("Student Stored!", true);
       } else {
         handleSnackbarOpen("Failed to store student!", false);
@@ -328,15 +330,17 @@ export default function form(props) {
 
       const registerRes = handleWriteContractRegister(formData);
 
-      if(registerRes) {
+      if (registerRes) {
         handleSnackbarOpen("Registration Completed!", true);
       } else {
         handleSnackbarOpen("Registration Failed!", false);
       }
 
-      const mintNftRes = handleWriteContractNFT(await getURI(formData?.studentId));
+      const mintNftRes = handleWriteContractNFT(
+        await getURI(formData?.studentId)
+      );
 
-      if(mintNftRes){
+      if (mintNftRes) {
         handleSnackbarOpen("Student NFT minted!", true);
       } else {
         handleSnackbarOpen("Failed to mint student NFT!", false);
