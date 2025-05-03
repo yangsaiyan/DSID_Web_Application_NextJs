@@ -53,6 +53,13 @@ export async function storeStudent(c) {
           nationality: c?.nationality,
         };
 
+        const studentDataImmutable = {
+          studentId: c?.studentId,
+          name: c?.name,
+          faculty: c?.faculty,
+          course: c?.course,
+        }
+
         const encryptedData = await encryptStudentData(
           c?.walletAddress,
           studentData
@@ -62,6 +69,17 @@ export async function storeStudent(c) {
           .get("students")
           .get(c?.walletAddress)
           .put(encryptedData, (putAck) => {
+            if (putAck.ok) {
+              console.log("Student data stored successfully.", putAck);
+            } else if (putAck.err) {
+              console.error("Error storing student data.", putAck.err);
+            }
+          });
+
+          user
+          .get("studentsImmutable")
+          .get(c?.walletAddress)
+          .put(studentDataImmutable, (putAck) => {
             if (putAck.ok) {
               console.log("Student data stored successfully.", putAck);
             } else if (putAck.err) {
