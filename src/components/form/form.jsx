@@ -320,23 +320,21 @@ export default function form(props) {
         );
     } else if (pathname?.includes("register")) {
       setLoading(true);
-      const storeStudentRes = storeStudent(formData);
-
+      const storeStudentRes = await storeStudent(formData);
       if (storeStudentRes) {
         handleSnackbarOpen("Student Stored!", true);
       } else {
         handleSnackbarOpen("Failed to store student!", false);
       }
 
-      const registerRes = handleWriteContractRegister(formData);
-
+      const registerRes = await handleWriteContractRegister(formData);
       if (registerRes) {
         handleSnackbarOpen("Registration Completed!", true);
       } else {
         handleSnackbarOpen("Registration Failed!", false);
       }
 
-      const mintNftRes = handleWriteContractNFT(
+      const mintNftRes = await handleWriteContractNFT(
         await getURI(formData?.studentId)
       );
 
