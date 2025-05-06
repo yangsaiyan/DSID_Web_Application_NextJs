@@ -100,11 +100,11 @@ export const CTAButton = styled(Button)(({ type }) => ({
   },
 }));
 
-export const StyledSnackbar = styled(Snackbar)(({status}) => ({
+export const StyledSnackbar = styled(Snackbar)(({snackStatus}) => ({
   "&&": {
     "& .MuiPaper-root": {
       backgroundColor: "#FFFFFF",
-      borderLeft: status ? "8px solid #1aff00" : "8px solid #f20505"
+      borderLeft: snackStatus ? "8px solid #1aff00" : "8px solid #f20505"
     },
 
     "& .MuiSnackbarContent-message": {
