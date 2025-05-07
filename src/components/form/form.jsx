@@ -242,9 +242,10 @@ export default function form(props) {
         provider,
         process.env.NEXT_PUBLIC_GELATO_API_1
       );
-      return true;
     } catch (error) {
       return false;
+    } finally {
+      return true;
     }
   };
 
@@ -355,22 +356,55 @@ export default function form(props) {
   const formInputErrorValidation = async () => {
     const errors = {};
 
-    if (!formData.name.trim()) {
-      errors.name = "Name is required";
-    } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.name)) {
-      errors.name = "Name must be 2-50 characters and contain only letters";
+    if(pathname?.includes("register") || pathname?.includes("search")){
+
+      if (!formData.name.trim()) {
+        errors.name = "Name is required";
+      } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.name)) {
+        errors.name = "Name must be 2-50 characters and contain only letters";
+      }
+
+      if (!formData.nric.trim()) {
+        errors.nric = "IC is required";
+      } else if (!/^\d{6}-\d{2}-\d{4}$/.test(formData.nric)) {
+        errors.nric = "Invalid Malaysian IC format (e.g., 990101-02-1234)";
+      }
+
+      if (!formData.race.trim()) {
+        errors.race = "Race is required";
+      }
+  
+      if (!formData.gender) {
+        errors.gender = "Gender is required";
+      }
+  
+      if (!formData.nationality.trim()) {
+        errors.nationality = "Nationality is required";
+      }
+  
+      if (!formData.phoneNumber.trim()) {
+        errors.phoneNumber = "Phone number is required";
+      } else if (!/^(\+?6?01)[0-46-9]-*[0-9]{7,8}$/.test(formData.phoneNumber)) {
+        errors.phoneNumber = "Invalid Malaysian phone number format (e.g., +60123456789 or 0123456789)";
+      }
+  
+      if (!formData.permanentHomeAddress.trim()) {
+        errors.permanentHomeAddress = "Address is required";
+      } else if (formData.permanentHomeAddress.length < 10) {
+        errors.permanentHomeAddress = "Address must be at least 10 characters long";
+      }
+  
+      if (!formData.walletAddress) {
+        errors.walletAddress = "Wallet address is required";
+      } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.walletAddress)) {
+        errors.walletAddress = "Invalid wallet address format";
+      }
     }
 
     if (!formData.studentId.trim()) {
       errors.studentId = "Student ID is required";
     } else if (!/^\d{7}$/.test(formData.studentId)) {
       errors.studentId = "Student ID must be 7 digits";
-    }
-
-    if (!formData.nric.trim()) {
-      errors.nric = "IC is required";
-    } else if (!/^\d{6}-\d{2}-\d{4}$/.test(formData.nric)) {
-      errors.nric = "Invalid Malaysian IC format (e.g., 990101-02-1234)";
     }
 
     if (!formData.email.trim()) {
@@ -385,36 +419,6 @@ export default function form(props) {
 
     if (!formData.course.trim()) {
       errors.course = "Course is required";
-    }
-
-    if (!formData.race.trim()) {
-      errors.race = "Race is required";
-    }
-
-    if (!formData.gender) {
-      errors.gender = "Gender is required";
-    }
-
-    if (!formData.nationality.trim()) {
-      errors.nationality = "Nationality is required";
-    }
-
-    if (!formData.phoneNumber.trim()) {
-      errors.phoneNumber = "Phone number is required";
-    } else if (!/^(\+?6?01)[0-46-9]-*[0-9]{7,8}$/.test(formData.phoneNumber)) {
-      errors.phoneNumber = "Invalid Malaysian phone number format (e.g., +60123456789 or 0123456789)";
-    }
-
-    if (!formData.permanentHomeAddress.trim()) {
-      errors.permanentHomeAddress = "Address is required";
-    } else if (formData.permanentHomeAddress.length < 10) {
-      errors.permanentHomeAddress = "Address must be at least 10 characters long";
-    }
-
-    if (!formData.walletAddress) {
-      errors.walletAddress = "Wallet address is required";
-    } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.walletAddress)) {
-      errors.walletAddress = "Invalid wallet address format";
     }
 
     return {
