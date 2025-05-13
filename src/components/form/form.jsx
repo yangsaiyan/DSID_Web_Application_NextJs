@@ -127,7 +127,9 @@ export default function form(props) {
   }, [formDisplay]);
 
   useEffect(() => {
-    dispatch(setStudent(formData));
+    if (!pathname?.includes("search")) {
+      dispatch(setStudent(formData));
+    }
   }, [formData]);
 
   const filterFormInput = (formDisplay) => {
@@ -241,7 +243,7 @@ export default function form(props) {
       target:
         process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
       data: registerData,
-      user: account.address,
+      user: formData?.walletAddress || account?.address,
     };
 
     try {
@@ -334,7 +336,7 @@ export default function form(props) {
             handleSnackbarOpen(`Error, ${error.text}`, false);
           }
         );
-    } else if (pathname?.includes("register")) {
+    } else if (pathname?.includes("register") || pathname?.includes("search")) {
       setLoading(true);
       const storeStudentRes = await storeStudent(formData);
       if (storeStudentRes) {
@@ -349,15 +351,18 @@ export default function form(props) {
       const registerRes = await handleWriteContractRegister(formData);
       if (registerRes) {
         console.log("registerRes", registerRes);
-        handleSnackbarOpen("Registration Completed!", true);
+        handleSnackbarOpen(pathname.includes("register") ? "Registration Completed!" : "Updated", true);
         await new Promise((resolve) => setTimeout(resolve, 2000));
       } else {
         handleSnackbarOpen("Registration Failed!", false);
         return;
       }
 
-      await handleWriteContractNFT(await getURI(formData?.studentId));
-      handleSnackbarOpen("Student NFT minting initiated!", true);
+      if(pathname?.includes("register")){
+        await handleWriteContractNFT(await getURI(formData?.studentId));
+        handleSnackbarOpen("Student NFT minting initiated!", true);
+      }
+      setLoading(false);
     }
   };
 
@@ -488,17 +493,21 @@ export default function form(props) {
             : pathname.includes("search") &&
               currentAddress.toLowerCase() ==
                 process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
-            && "386px"
+            ? "386px"
+            : pathname.includes("search") &&
+              currentAddress.toLowerCase() !=
+                process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase() &&
+              "286px",
         }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
-            <>
+            <Grid2 width={"100%"} key={key}>
               {key !== "walletAddress" && key !== "gender" && (
                 <StyledTextField
                   label={value}
                   name={key}
-                  value={!isEmpty(formData[key]) ? formData[key] : ""}
+                  value={formData[key] || ""}
                   disabled={
                     (!isEmpty(formData[key]) &&
                       !pathname.includes("push") &&
@@ -517,7 +526,7 @@ export default function form(props) {
                 <Grid2 width={"100%"}>
                   <InputLabel>Gender</InputLabel>
                   <StyledSelect
-                    value={formData[key]}
+                    value={formData[key] || ""}
                     onChange={onChange}
                     name={key}
                     disabled={
@@ -543,12 +552,12 @@ export default function form(props) {
                   <StyledTextField
                     label={value}
                     name={key}
-                    value={!isEmpty(formData[key]) ? formData[key] : ""}
+                    value={formData[key] || ""}
                     onChange={onChange}
                   />
                 </Grid2>
               )}
-            </>
+            </Grid2>
           );
         })}
       </TextFieldContainer>
@@ -558,7 +567,16 @@ export default function form(props) {
           process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
       ) && (
         <CTAButtonContainer>
-          <CTAButton type={"reset"}>Reset</CTAButton>
+          {pathname.includes("register") && (
+            <CTAButton
+              type={"reset"}
+              onClick={() => {
+                setFormData(formDefaultState);
+              }}
+            >
+              Reset
+            </CTAButton>
+          )}
           <CTAButton type={"submit"}>Submit</CTAButton>
         </CTAButtonContainer>
       )}
