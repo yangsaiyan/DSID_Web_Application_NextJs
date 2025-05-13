@@ -477,7 +477,11 @@ export default function form(props) {
         sx={{
           paddingTop: pathname?.includes("register")
             ? "486px"
-            : (pathname?.includes("search") && account?.address == process.env.NEXT_PUBLIC_ADMIN_WALLET) ? "386px" : "286px",
+            : pathname?.includes("search") &&
+              account?.address.toLowerCase() ==
+                process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
+            ? "386px"
+            : "286px",
         }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
@@ -496,7 +500,8 @@ export default function form(props) {
                         key == "faculty" ||
                         key == "course")) ||
                     (pathname.includes("search") &&
-                      account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET)
+                      account?.address.toLowerCase() !=
+                        process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase())
                   }
                   onChange={onChange}
                 />
@@ -510,7 +515,8 @@ export default function form(props) {
                     name={key}
                     disabled={
                       pathname.includes("search") &&
-                      account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET
+                      account?.address.toLowerCase() !=
+                        process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
                     }
                   >
                     <MenuItem value={"male"}>Male</MenuItem>
