@@ -300,7 +300,7 @@ export default function form(props) {
     e.preventDefault();
 
     const { isValid, errors } = await formInputErrorValidation();
-    
+
     if (!isValid) {
       const firstError = Object.values(errors)[0];
       handleSnackbarOpen(firstError, false);
@@ -332,7 +332,7 @@ export default function form(props) {
       if (storeStudentRes) {
         console.log("storeStudentRes", storeStudentRes);
         handleSnackbarOpen("Student Stored!", true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } else {
         handleSnackbarOpen("Failed to store student!", false);
         return;
@@ -342,7 +342,7 @@ export default function form(props) {
       if (registerRes) {
         console.log("registerRes", registerRes);
         handleSnackbarOpen("Registration Completed!", true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } else {
         handleSnackbarOpen("Registration Failed!", false);
         return;
@@ -356,8 +356,7 @@ export default function form(props) {
   const formInputErrorValidation = async () => {
     const errors = {};
 
-    if(pathname?.includes("register") || pathname?.includes("search")){
-
+    if (pathname?.includes("register") || pathname?.includes("search")) {
       if (!formData.name.trim()) {
         errors.name = "Name is required";
       } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.name)) {
@@ -373,27 +372,31 @@ export default function form(props) {
       if (!formData.race.trim()) {
         errors.race = "Race is required";
       }
-  
+
       if (!formData.gender) {
         errors.gender = "Gender is required";
       }
-  
+
       if (!formData.nationality.trim()) {
         errors.nationality = "Nationality is required";
       }
-  
+
       if (!formData.phoneNumber.trim()) {
         errors.phoneNumber = "Phone number is required";
-      } else if (!/^(\+?6?01)[0-46-9]-*[0-9]{7,8}$/.test(formData.phoneNumber)) {
-        errors.phoneNumber = "Invalid Malaysian phone number format (e.g., +60123456789 or 0123456789)";
+      } else if (
+        !/^(\+?6?01)[0-46-9]-*[0-9]{7,8}$/.test(formData.phoneNumber)
+      ) {
+        errors.phoneNumber =
+          "Invalid Malaysian phone number format (e.g., +60123456789 or 0123456789)";
       }
-  
+
       if (!formData.permanentHomeAddress.trim()) {
         errors.permanentHomeAddress = "Address is required";
       } else if (formData.permanentHomeAddress.length < 10) {
-        errors.permanentHomeAddress = "Address must be at least 10 characters long";
+        errors.permanentHomeAddress =
+          "Address must be at least 10 characters long";
       }
-  
+
       if (!formData.walletAddress) {
         errors.walletAddress = "Wallet address is required";
       } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.walletAddress)) {
@@ -423,7 +426,7 @@ export default function form(props) {
 
     return {
       isValid: Object.keys(errors).length === 0,
-      errors
+      errors,
     };
   };
 
@@ -474,7 +477,7 @@ export default function form(props) {
         sx={{
           paddingTop: pathname?.includes("register")
             ? "486px"
-            : pathname?.includes("search") && "386px",
+            : (pathname?.includes("search") && account?.address == process.env.NEXT_PUBLIC_ADMIN_WALLET) ? "386px" : "286px",
         }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
@@ -486,12 +489,14 @@ export default function form(props) {
                   name={key}
                   value={!isEmpty(formData[key]) ? formData[key] : ""}
                   disabled={
-                    !isEmpty(formData[key]) &&
-                    !pathname.includes("push") &&
-                    (key == "studentId" ||
-                      key == "email" ||
-                      key == "faculty" ||
-                      key == "course")
+                    (!isEmpty(formData[key]) &&
+                      !pathname.includes("push") &&
+                      (key == "studentId" ||
+                        key == "email" ||
+                        key == "faculty" ||
+                        key == "course")) ||
+                    (pathname.includes("search") &&
+                      account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET)
                   }
                   onChange={onChange}
                 />
@@ -503,6 +508,10 @@ export default function form(props) {
                     value={formData[key]}
                     onChange={onChange}
                     name={key}
+                    disabled={
+                      pathname.includes("search") &&
+                      account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET
+                    }
                   >
                     <MenuItem value={"male"}>Male</MenuItem>
                     <MenuItem value={"female"}>Female</MenuItem>
@@ -524,17 +533,21 @@ export default function form(props) {
                     value={!isEmpty(formData[key]) ? formData[key] : ""}
                     onChange={onChange}
                   />
-                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                 </Grid2>
               )}
             </>
           );
         })}
       </TextFieldContainer>
-      <CTAButtonContainer>
-        <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"}>Submit</CTAButton>
-      </CTAButtonContainer>
+      {!(
+        pathname.includes("search") &&
+        account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET
+      ) && (
+        <CTAButtonContainer>
+          <CTAButton type={"reset"}>Reset</CTAButton>
+          <CTAButton type={"submit"}>Submit</CTAButton>
+        </CTAButtonContainer>
+      )}
     </StyledBox>
   );
 }
