@@ -268,9 +268,12 @@ export default function form(props) {
       provider
     );
 
+    let eventFired = false;
+
     studentRegistryContract.once(
       "StudentRegistered",
       async (student, studentId) => {
+        eventFired = true;
         const studentNFTContract = new Contract(
           process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
           student_nft_abi,
@@ -303,6 +306,42 @@ export default function form(props) {
         }
       }
     );
+
+    await new Promise(resolve => setTimeout(resolve, 20000));
+
+    if (!eventFired) {
+      console.log("Proceeding with minting without StudentRegistered event");
+      const studentNFTContract = new Contract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+        student_nft_abi,
+        signer
+      );
+
+      const mintData = studentNFTContract.interface.encodeFunctionData(
+        "mint",
+        [uri]
+      );
+      const mintRequest = {
+        chainId: polygonAmoy.id,
+        target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+        data: mintData,
+        user: account.address,
+      };
+
+      try {
+        const mintResponse = await relay.sponsoredCallERC2771(
+          mintRequest,
+          provider,
+          process.env.NEXT_PUBLIC_GELATO_API_2
+        );
+        setLoading(false);
+        return true;
+      } catch (error) {
+        setLoading(false);
+        return false;
+      }
+    }
+
     return false;
   };
 
@@ -362,7 +401,6 @@ export default function form(props) {
         await handleWriteContractNFT(await getURI(formData?.studentId));
         handleSnackbarOpen("Student NFT minting initiated!", true);
       }
-      setLoading(false);
     }
   };
 
