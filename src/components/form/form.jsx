@@ -34,7 +34,8 @@ import XMarkIcon from "@heroicons/react/24/solid/XMarkIcon";
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
 export default function form(props) {
-  const { account } = props;
+  //const account = useAccount();
+  const { account, currentAddressFromParent } = props;
 
   const studentInfo = useSelector((state) => state.student);
 
@@ -84,6 +85,8 @@ export default function form(props) {
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
 
+  const currentAddress = currentAddressFromParent || "";
+
   useEffect(() => {
     if (pathname?.includes("register")) {
       setFormDisplay(formPath?.register);
@@ -103,6 +106,11 @@ export default function form(props) {
       course: params?.get("course") || "",
     });
   }, []);
+
+  useEffect(() => {
+    console.log(account?.address);
+    console.log(currentAddress);
+  }, [currentAddress, account]);
 
   useEffect(() => {
     if (pathname?.includes("search") && studentInfo?.walletAddress != "") {
@@ -477,11 +485,10 @@ export default function form(props) {
         sx={{
           paddingTop: pathname?.includes("register")
             ? "486px"
-            : pathname?.includes("search") &&
-              account?.address.toLowerCase() ==
+            : pathname.includes("search") &&
+              currentAddress.toLowerCase() ==
                 process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
-            ? "386px"
-            : "286px",
+            && "386px"
         }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
@@ -500,7 +507,7 @@ export default function form(props) {
                         key == "faculty" ||
                         key == "course")) ||
                     (pathname.includes("search") &&
-                      account?.address.toLowerCase() !=
+                      currentAddress.toLowerCase() !=
                         process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase())
                   }
                   onChange={onChange}
@@ -515,7 +522,7 @@ export default function form(props) {
                     name={key}
                     disabled={
                       pathname.includes("search") &&
-                      account?.address.toLowerCase() !=
+                      currentAddress.toLowerCase() !=
                         process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
                     }
                   >
@@ -547,7 +554,8 @@ export default function form(props) {
       </TextFieldContainer>
       {!(
         pathname.includes("search") &&
-        account?.address != process.env.NEXT_PUBLIC_ADMIN_WALLET
+        currentAddress.toLowerCase() !=
+          process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
       ) && (
         <CTAButtonContainer>
           <CTAButton type={"reset"}>Reset</CTAButton>

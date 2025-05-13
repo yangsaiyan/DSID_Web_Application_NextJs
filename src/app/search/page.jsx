@@ -3,6 +3,7 @@ import Loading from "@/components/loading/loading";
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
@@ -15,6 +16,7 @@ const SearchBar = dynamic(() => import("@/components/SearchBar/SearchBar"), {
 });
 
 export default function Search() {
+  const account = useAccount();
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -26,7 +28,7 @@ export default function Search() {
       alignItems={"center"}
     >
       {showForm ? (
-        <FormComponent />
+        <FormComponent currentAddressFromParent={account?.address} />
       ) : (
         <SearchBar setShowForm={setShowForm} showForm={showForm} />
       )}
