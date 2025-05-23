@@ -2,12 +2,14 @@
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
 });
 
 export default function PushEmail() {
+  const account = useAccount();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +46,7 @@ export default function PushEmail() {
           alignItems: "center",
         }}
       >
-        <FormComponent formData={formData} setFormData={setFormData} />
+        <FormComponent account={account} formData={formData} setFormData={setFormData} />
       </Grid2>
     </Grid2>
   );

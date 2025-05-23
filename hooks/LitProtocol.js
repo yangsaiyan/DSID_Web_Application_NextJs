@@ -19,6 +19,7 @@ connectLitClient();
 
 const accessControlConditions = (studentWallet) => [
   {
+    conditionType: "evmBasic",
     contractAddress: "",
     standardContractType: "",
     chain: "amoy",
@@ -26,13 +27,14 @@ const accessControlConditions = (studentWallet) => [
     parameters: [":userAddress"],
     returnValueTest: {
       comparator: "=",
-      value: studentWallet.toLowerCase(),
+      value: studentWallet,
     },
   },
   {
     operator: "or",
   },
   {
+    conditionType: "evmBasic",
     contractAddress: "",
     standardContractType: "",
     chain: "amoy",
@@ -40,7 +42,7 @@ const accessControlConditions = (studentWallet) => [
     parameters: [":userAddress"],
     returnValueTest: {
       comparator: "=",
-      value: process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase(),
+      value: process.env.NEXT_PUBLIC_ADMIN_WALLET,
     },
   },
 ];
@@ -83,7 +85,7 @@ export async function decryptStudentData(
   try {
     const authSig = await checkAndSignAuthMessage({
       chain: "amoy",
-      // wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
+      wallet: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
     });
     const accConditions = accessControlConditions(address);
 

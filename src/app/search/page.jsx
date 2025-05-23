@@ -1,17 +1,22 @@
 "use client";
+import Loading from "@/components/loading/loading";
 import { Grid2 } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 const SearchBar = dynamic(() => import("@/components/SearchBar/SearchBar"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 export default function Search() {
+  const account = useAccount();
   const [showForm, setShowForm] = useState(false);
 
   return (
@@ -23,38 +28,9 @@ export default function Search() {
       alignItems={"center"}
     >
       {showForm ? (
-        <FormComponent />
+        <FormComponent currentAddressFromParent={account?.address} />
       ) : (
-        <Grid2
-          sx={{
-            width: "100%",
-            height: "fit-content",
-            maxWidth: "768px",
-            padding: "20px",
-            borderRadius: "20px",
-            background: "white",
-            overflowY: "scroll",
-            boxShadow:
-              "rgba(50, 50, 93, 0.65) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.39) 0px 18px 36px -18px inset",
-            "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              WebkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-              marginTop: "12px",
-              marginBottom: "12px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "rgba(115, 114, 114, 0.77)",
-              borderRadius: "50px",
-            },
-          }}
-        >
-          <SearchBar
-            setShowForm={setShowForm}
-            showForm={showForm}
-          />
-        </Grid2>
+        <SearchBar setShowForm={setShowForm} showForm={showForm} />
       )}
     </Grid2>
   );

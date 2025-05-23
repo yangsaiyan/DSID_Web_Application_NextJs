@@ -1,11 +1,12 @@
 "use client";
-import { Grid2, InputLabel, MenuItem } from "@mui/material";
+import { Grid2, IconButton, InputLabel, MenuItem } from "@mui/material";
 import {
   ConnectWalletButton,
   CTAButton,
   CTAButtonContainer,
   StyledBox,
   StyledSelect,
+  StyledSnackbar,
   StyledTextField,
   TextFieldContainer,
 } from "./styles";
@@ -19,26 +20,28 @@ import {
   student_nft_abi,
 } from "../../../constants";
 import emailjs from "@emailjs/browser";
-import { add, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import dynamic from "next/dynamic";
-import {
-  useAccount,
-  useSignMessage,
-} from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 import { setStudent } from "../../../redux/actions/student_action";
 import { storeStudent } from "hooks/GunDB";
 import { GelatoRelay } from "@gelatonetwork/relay-sdk";
 import { Contract, ethers } from "ethers";
 import { polygonAmoy } from "viem/chains";
 import { getURI } from "utils/NFT_Utils/nft_utils";
+import XMarkIcon from "@heroicons/react/24/solid/XMarkIcon";
 
 const Loading = dynamic(() => import("../loading/loading"), { ssr: false });
 
 export default function form(props) {
-  const { account } = props;
+  //const account = useAccount();
+  const { account, currentAddressFromParent } = props;
 
   const studentInfo = useSelector((state) => state.student);
 
+  const [open, setSnackbarOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackStatus, setSnackStatus] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     studentId: "",
@@ -53,6 +56,20 @@ export default function form(props) {
     permanentHomeAddress: "",
     walletAddress: account?.address || "",
   });
+  const formDefaultState = {
+    name: "",
+    studentId: "",
+    nric: "",
+    email: "",
+    faculty: "",
+    course: "",
+    race: "",
+    gender: "",
+    nationality: "",
+    phoneNumber: "",
+    permanentHomeAddress: "",
+    walletAddress: account?.address || "",
+  };
 
   const { signMessageAsync } = useSignMessage();
   const relay = new GelatoRelay();
@@ -67,25 +84,8 @@ export default function form(props) {
   const [formDisplay, setFormDisplay] = useState([]);
   const [formInput, setFormInput] = useState({});
   const [loading, setLoading] = useState(true);
-  const [tokenId, setTokenId] = useState("");
-  const [tokenURI, setTokenURI] = useState("");
-  // const CONTRACT_ADDRESS = "0x0AaE0472decB349e0649AF336E4804D9f8401bC7";
 
-  // const { data: fetchedTokenId } = useContractRead({
-  //   address: CONTRACT_ADDRESS,
-  //   abi: student_nft_abi,
-  //   functionName: "getTokenIdOfStudent",
-  //   args: [account?.address],
-  //   enabled: account?.isConnected,
-  // });
-
-  // const { data: fetchedTokenURI } = useContractRead({
-  //   address: CONTRACT_ADDRESS,
-  //   abi: student_nft_abi,
-  //   functionName: "getTokenURI",
-  //   args: [fetchedTokenId],
-  //   enabled: !!fetchedTokenId && fetchedTokenId > 0,
-  // });
+  const currentAddress = currentAddressFromParent || "";
 
   useEffect(() => {
     if (pathname?.includes("register")) {
@@ -108,7 +108,12 @@ export default function form(props) {
   }, []);
 
   useEffect(() => {
-    if (pathname?.includes("search")) {
+    console.log(account?.address);
+    console.log(currentAddress);
+  }, [currentAddress, account]);
+
+  useEffect(() => {
+    if (pathname?.includes("search") && studentInfo?.walletAddress != "") {
       setFormData((prev) => ({
         ...prev,
         ...studentInfo,
@@ -120,6 +125,12 @@ export default function form(props) {
     filterFormInput(formDisplay);
     setLoading(false);
   }, [formDisplay]);
+
+  useEffect(() => {
+    if (!pathname?.includes("search")) {
+      dispatch(setStudent(formData));
+    }
+  }, [formData]);
 
   const filterFormInput = (formDisplay) => {
     for (const [key, value] of Object.entries(userData)) {
@@ -229,12 +240,11 @@ export default function form(props) {
 
     const registerRequest = {
       chainId: polygonAmoy.id,
-      target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
+      target:
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_REGISTRATION_ADDRESS,
       data: registerData,
-      user: account.address,
+      user: formData?.walletAddress || account?.address,
     };
-
-    console.log("Register Request:", registerRequest);
 
     try {
       const registerResponse = await relay.sponsoredCallERC2771(
@@ -242,10 +252,10 @@ export default function form(props) {
         provider,
         process.env.NEXT_PUBLIC_GELATO_API_1
       );
-      console.log("Gelato Relay TX Hash (Register):", registerResponse);
-      alert("Gasless registration request sent!");
     } catch (error) {
-      console.error("Gelato Relay Error (Register):", error);
+      return false;
+    } finally {
+      return true;
     }
   };
 
@@ -258,13 +268,12 @@ export default function form(props) {
       provider
     );
 
-    console.log("Listening for StudentRegistered event...");
+    let eventFired = false;
 
     studentRegistryContract.once(
       "StudentRegistered",
       async (student, studentId) => {
-        console.log("StudentRegistered event detected:", student, studentId);
-
+        eventFired = true;
         const studentNFTContract = new Contract(
           process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
           student_nft_abi,
@@ -275,7 +284,6 @@ export default function form(props) {
           "mint",
           [uri]
         );
-        console.log(uri);
         const mintRequest = {
           chainId: polygonAmoy.id,
           target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
@@ -283,27 +291,70 @@ export default function form(props) {
           user: account.address,
         };
 
-        console.log("Mint Request:", mintRequest);
-
         try {
           const mintResponse = await relay.sponsoredCallERC2771(
             mintRequest,
             provider,
             process.env.NEXT_PUBLIC_GELATO_API_2
           );
-          console.log("Gelato Relay TX Hash (Mint):", mintResponse);
-          alert("Gasless NFT minting request sent!");
           setLoading(false);
         } catch (error) {
-          console.error("Gelato Relay Error (Mint):", error);
           setLoading(false);
+          return false;
+        } finally {
+          return true;
         }
       }
     );
+
+    await new Promise(resolve => setTimeout(resolve, 20000));
+
+    if (!eventFired) {
+      console.log("Proceeding with minting without StudentRegistered event");
+      const studentNFTContract = new Contract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+        student_nft_abi,
+        signer
+      );
+
+      const mintData = studentNFTContract.interface.encodeFunctionData(
+        "mint",
+        [uri]
+      );
+      const mintRequest = {
+        chainId: polygonAmoy.id,
+        target: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_STUDENT_NFT_ADDRESS,
+        data: mintData,
+        user: account.address,
+      };
+
+      try {
+        const mintResponse = await relay.sponsoredCallERC2771(
+          mintRequest,
+          provider,
+          process.env.NEXT_PUBLIC_GELATO_API_2
+        );
+        setLoading(false);
+        return true;
+      } catch (error) {
+        setLoading(false);
+        return false;
+      }
+    }
+
+    return false;
   };
 
   const submitForm = async (e) => {
     e.preventDefault();
+
+    const { isValid, errors } = await formInputErrorValidation();
+
+    if (!isValid) {
+      const firstError = Object.values(errors)[0];
+      handleSnackbarOpen(firstError, false);
+      return;
+    }
 
     if (pathname?.includes("push") && formRef) {
       emailjs
@@ -317,23 +368,143 @@ export default function form(props) {
         )
         .then(
           () => {
-            console.log("SUCCESS!"); //add toast later
+            handleSnackbarOpen("Success!", true);
+            setFormData(formDefaultState);
           },
           (error) => {
-            console.log("FAILED...", error.text); //add toast later
+            handleSnackbarOpen(`Error, ${error.text}`, false);
           }
         );
-    } else if (pathname?.includes("register")) {
-      dispatch(setStudent(formData));
+    } else if (pathname?.includes("register") || pathname?.includes("search")) {
       setLoading(true);
-      storeStudent(formData);
-      handleWriteContractRegister(formData);
-      const uri = await getURI(formData?.studentId);
-      handleWriteContractNFT(uri);
+      const storeStudentRes = await storeStudent(formData);
+      if (storeStudentRes) {
+        console.log("storeStudentRes", storeStudentRes);
+        handleSnackbarOpen("Student Stored!", true);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } else {
+        handleSnackbarOpen("Failed to store student!", false);
+        return;
+      }
+
+      const registerRes = await handleWriteContractRegister(formData);
+      if (registerRes) {
+        console.log("registerRes", registerRes);
+        handleSnackbarOpen(pathname.includes("register") ? "Registration Completed!" : "Updated", true);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } else {
+        handleSnackbarOpen("Registration Failed!", false);
+        return;
+      }
+
+      if(pathname?.includes("register")){
+        await handleWriteContractNFT(await getURI(formData?.studentId));
+        handleSnackbarOpen("Student NFT minting initiated!", true);
+      }
     }
   };
 
-  const formInputErrorValidation = async () => {};
+  const formInputErrorValidation = async () => {
+    const errors = {};
+
+    if (pathname?.includes("register") || pathname?.includes("search")) {
+      if (!formData.name.trim()) {
+        errors.name = "Name is required";
+      } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.name)) {
+        errors.name = "Name must be 2-50 characters and contain only letters";
+      }
+
+      if (!formData.nric.trim()) {
+        errors.nric = "IC is required";
+      } else if (!/^\d{6}-\d{2}-\d{4}$/.test(formData.nric)) {
+        errors.nric = "Invalid Malaysian IC format (e.g., 990101-02-1234)";
+      }
+
+      if (!formData.race.trim()) {
+        errors.race = "Race is required";
+      }
+
+      if (!formData.gender) {
+        errors.gender = "Gender is required";
+      }
+
+      if (!formData.nationality.trim()) {
+        errors.nationality = "Nationality is required";
+      }
+
+      if (!formData.phoneNumber.trim()) {
+        errors.phoneNumber = "Phone number is required";
+      } else if (
+        !/^(\+?6?01)[0-46-9]-*[0-9]{7,8}$/.test(formData.phoneNumber)
+      ) {
+        errors.phoneNumber =
+          "Invalid Malaysian phone number format (e.g., +60123456789 or 0123456789)";
+      }
+
+      if (!formData.permanentHomeAddress.trim()) {
+        errors.permanentHomeAddress = "Address is required";
+      } else if (formData.permanentHomeAddress.length < 10) {
+        errors.permanentHomeAddress =
+          "Address must be at least 10 characters long";
+      }
+
+      if (!formData.walletAddress) {
+        errors.walletAddress = "Wallet address is required";
+      } else if (!/^0x[a-fA-F0-9]{40}$/.test(formData.walletAddress)) {
+        errors.walletAddress = "Invalid wallet address format";
+      }
+    }
+
+    if (!formData.studentId.trim()) {
+      errors.studentId = "Student ID is required";
+    } else if (!/^\d{7}$/.test(formData.studentId)) {
+      errors.studentId = "Student ID must be 7 digits";
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Invalid email format";
+    }
+
+    if (!formData.faculty.trim()) {
+      errors.faculty = "Faculty is required";
+    }
+
+    if (!formData.course.trim()) {
+      errors.course = "Course is required";
+    }
+
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors,
+    };
+  };
+
+  const handleSnackbarOpen = (message, status) => {
+    setSnackbarOpen(true);
+    setSnackMessage(message);
+    setSnackStatus(status);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarOpen(false);
+  };
+
+  const action = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={handleSnackbarClose}
+    >
+      <XMarkIcon style={{ width: 20, height: 20, color: "#000000" }} />
+    </IconButton>
+  );
 
   return loading ? (
     <Loading />
@@ -344,28 +515,47 @@ export default function form(props) {
       onSubmit={submitForm}
       path={pathname}
     >
+      <StyledSnackbar
+        snackStatus={snackStatus}
+        open={open}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={snackMessage}
+        action={action}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
       <TextFieldContainer
         sx={{
           paddingTop: pathname?.includes("register")
             ? "486px"
-            : pathname?.includes("search") && "386px",
+            : pathname.includes("search") &&
+              currentAddress.toLowerCase() ==
+                process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
+            ? "386px"
+            : pathname.includes("search") &&
+              currentAddress.toLowerCase() !=
+                process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase() &&
+              "286px",
         }}
       >
         {Object?.entries(formInput)?.map(([key, value]) => {
           return (
-            <>
+            <Grid2 width={"100%"} key={key}>
               {key !== "walletAddress" && key !== "gender" && (
                 <StyledTextField
                   label={value}
                   name={key}
-                  value={!isEmpty(formData[key]) ? formData[key] : ""}
+                  value={formData[key] || ""}
                   disabled={
-                    !isEmpty(formData[key]) &&
-                    !pathname.includes("push") &&
-                    (key == "studentId" ||
-                      key == "email" ||
-                      key == "faculty" ||
-                      key == "course")
+                    (!isEmpty(formData[key]) &&
+                      !pathname.includes("push") &&
+                      (key == "studentId" ||
+                        key == "email" ||
+                        key == "faculty" ||
+                        key == "course")) ||
+                    (pathname.includes("search") &&
+                      currentAddress.toLowerCase() !=
+                        process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase())
                   }
                   onChange={onChange}
                 />
@@ -374,9 +564,14 @@ export default function form(props) {
                 <Grid2 width={"100%"}>
                   <InputLabel>Gender</InputLabel>
                   <StyledSelect
-                    value={formData[key]}
+                    value={formData[key] || ""}
                     onChange={onChange}
                     name={key}
+                    disabled={
+                      pathname.includes("search") &&
+                      currentAddress.toLowerCase() !=
+                        process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
+                    }
                   >
                     <MenuItem value={"male"}>Male</MenuItem>
                     <MenuItem value={"female"}>Female</MenuItem>
@@ -395,20 +590,34 @@ export default function form(props) {
                   <StyledTextField
                     label={value}
                     name={key}
-                    value={!isEmpty(formData[key]) ? formData[key] : ""}
+                    value={formData[key] || ""}
                     onChange={onChange}
                   />
-                  <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
                 </Grid2>
               )}
-            </>
+            </Grid2>
           );
         })}
       </TextFieldContainer>
-      <CTAButtonContainer>
-        <CTAButton type={"reset"}>Reset</CTAButton>
-        <CTAButton type={"submit"}>Submit</CTAButton>
-      </CTAButtonContainer>
+      {!(
+        pathname.includes("search") &&
+        currentAddress.toLowerCase() !=
+          process.env.NEXT_PUBLIC_ADMIN_WALLET.toLowerCase()
+      ) && (
+        <CTAButtonContainer>
+          {pathname.includes("register") && (
+            <CTAButton
+              type={"reset"}
+              onClick={() => {
+                setFormData(formDefaultState);
+              }}
+            >
+              Reset
+            </CTAButton>
+          )}
+          <CTAButton type={"submit"}>Submit</CTAButton>
+        </CTAButtonContainer>
+      )}
     </StyledBox>
   );
 }

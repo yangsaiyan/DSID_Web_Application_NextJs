@@ -1,19 +1,21 @@
 "use client";
+import Loading from "@/components/loading/loading";
 import { Grid2 } from "@mui/material";
-import html2canvas from "html2canvas";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAccount } from "wagmi";
 
 const FormComponent = dynamic(() => import("../../components/form/form"), {
   ssr: false,
+  loading: () => <Loading />,
 });
 
 const StudenIDComponent = dynamic(
   () => import("../../components/studentId/studentId"),
   {
     ssr: false,
+    loading: () => <Loading />,
   }
 );
 
@@ -41,9 +43,7 @@ export default function page() {
           alignItems: "center",
         }}
       >
-        <FormComponent
-          account={account}
-        />
+        <FormComponent account={account} />
         <StudenIDComponent
           address={account?.address}
           studentId={studentData?.studentId}

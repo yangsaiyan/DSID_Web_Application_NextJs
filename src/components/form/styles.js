@@ -1,4 +1,4 @@
-import { Box, Button, Grid2, Select, TextField } from "@mui/material";
+import { Box, Button, Grid2, Select, Snackbar, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const StyledBox = styled(Box)(({ path }) => ({
@@ -8,7 +8,10 @@ export const StyledBox = styled(Box)(({ path }) => ({
   justifyContent: "center",
   alignItems: "center",
   width: "768px",
-  height: (path?.includes("register") || path?.includes("search")) ? "660px" : "fit-content",
+  height:
+    path?.includes("register") || path?.includes("search")
+      ? "660px"
+      : "fit-content",
   backgroundColor: "white",
   borderRadius: "20px",
   margin: "48px 0 48px 0",
@@ -94,5 +97,19 @@ export const CTAButton = styled(Button)(({ type }) => ({
 
   ":hover": {
     boxShadow: "0px 6px 44px -16px rgb(173, 172, 172) inset",
+  },
+}));
+
+export const StyledSnackbar = styled(Snackbar)(({snackStatus}) => ({
+  "&&": {
+    "& .MuiPaper-root": {
+      backgroundColor: "#FFFFFF",
+      borderLeft: snackStatus ? "8px solid #1aff00" : "8px solid #f20505"
+    },
+
+    "& .MuiSnackbarContent-message": {
+      color: "#000000",
+      fontSize: "125%",
+    }
   },
 }));

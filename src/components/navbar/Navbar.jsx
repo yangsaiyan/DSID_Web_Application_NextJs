@@ -1,7 +1,6 @@
 "use client";
 import { Grid2 } from "@mui/material";
 import {
-  ConnectWalletButton,
   NavbarContainer,
   NavbarContent,
   NavbarContentContainer,
@@ -9,17 +8,28 @@ import {
   StyledText,
   TextContainer,
 } from "./styles";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { Account } from "./Account/account";
 import { WalletButton } from "./WalletButton/WalletButton";
+import { useEffect } from "react";
 
 export default function Navbar(props) {
   const { ref } = props;
-  // const { address } = useAccount()
-  // const { disconnect } = useDisconnect()
+  const { isConnected } = useAccount();
+
+  useEffect(() => {
+    
+    if (!isConnected) {
+      sessionStorage.removeItem("walletReloaded");
+    }
+
+    if (isConnected && !sessionStorage.getItem("walletReloaded")) {
+      sessionStorage.setItem("walletReloaded", "true");
+      window.location.reload();
+    }
+  }, [isConnected]);
 
   function ConnectWallet() {
-    const { isConnected } = useAccount();
     if (isConnected) return <Account />;
     return <WalletButton />;
   }
